@@ -2,9 +2,9 @@ package de.lostmekka._3m5.gamejam._5.entity
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
-import de.lostmekka._3m5.gamejam._5.Dude
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
@@ -19,8 +19,8 @@ class Tower(private val world : World) : Actor() {
     }
 
     override fun setPosition (x: Float, y: Float){
-        super.setPosition(x,y)
-        body.position.set(x,y)
+        super.setPosition(x, y)
+        body.setTransform(x, y, body.angle)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -40,7 +40,7 @@ class Tower(private val world : World) : Actor() {
         }
 
         val tower = dudes.minBy{
-            it.position.dst2.(body.position)
+            Vector2(it.x, it.y).dst2(body.position)
         }
     }
 }

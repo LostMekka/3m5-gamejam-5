@@ -1,38 +1,34 @@
-package de.lostmekka._3m5.gamejam._5
+package de.lostmekka._3m5.gamejam._5.entity
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
-
-class Tower(private val world: World) {
-    private val body = world.body {
-        userData = this
-        box(width = 1f, height = 1f)
-    }
-
-    var position
-        get() = body.position
-        set(v) { body.position.set(v) }
-}
+import ktx.graphics.use
 
 class Dude(private val world: World) : Actor() {
     private val img = Texture("badlogic.jpg")
 
     private val body = world.body {
-        userData = this
+        userData = this@Dude
         box(width = 1f, height = 1f)
     }
 
+    val sight = 16f
+
     override fun setPosition(x: Float, y: Float) {
         super.setPosition(x, y)
-        body.position.set(x, y)
+        body.setTransform(x, y, body.angle)
     }
 
     override fun act(dt: Float) {
+        super.act(dt)
+
         val towers = mutableListOf<Tower>()
 
         world.query(x - sight, y - sight, x + sight, y + sight) {
@@ -44,10 +40,10 @@ class Dude(private val world: World) : Actor() {
         }
 
         val tower = towers.minBy {
-            it.position.dst2(body.position)
+            Vector2(it.x, it.y).dst2(body.position)
         }
 
-        println(tower)
+        if (tower != null) println("$tower")
     }
 
     override fun draw (batch: Batch, parentAlpha: Float) {
