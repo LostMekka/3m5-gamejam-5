@@ -1,6 +1,7 @@
 package de.lostmekka._3m5.gamejam._5
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -13,8 +14,7 @@ import de.lostmekka._3m5.gamejam._5.entity.Tower
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.graphics.use
-
-const val MogulRadius = 0.4f
+import ktx.math.vec2
 
 class GamePlayScreen : KtxScreen {
     private val batch = SpriteBatch()
@@ -38,7 +38,11 @@ class GamePlayScreen : KtxScreen {
     }
 
     private fun handleInput(delta: Float) {
-        // TODO
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
+            val xPos = Gdx.input.x.toFloat()
+            val yPos = Gdx.input.y.toFloat()
+            mogul.movementTarget = stage.screenToStageCoordinates(vec2(xPos, yPos))
+        }
     }
 
     private fun update(delta: Float) {
@@ -56,9 +60,14 @@ class GamePlayScreen : KtxScreen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.draw()
-        drawMogul()
         batch.use {
             dude.draw(batch, 1f)
+        }
+
+        shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
+            it.projectionMatrix = stage.camera.projection
+            it.setAutoShapeType(true)
+            // TODO: draw lines and other shapes here
         }
     }
 
@@ -78,10 +87,5 @@ class GamePlayScreen : KtxScreen {
     }
 
     private fun drawMogul() {
-        shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
-            it.projectionMatrix = stage.camera.projection
-            it.setAutoShapeType(true)
-            it.circle(mogul.x, mogul.y, MogulRadius, 20)
-        }
     }
 }
