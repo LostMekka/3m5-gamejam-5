@@ -60,6 +60,7 @@ class GamePlayScreen : KtxScreen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.draw()
+
         batch.use {
             dude.draw(batch, 1f)
         }
@@ -84,8 +85,5 @@ class GamePlayScreen : KtxScreen {
     override fun dispose() {
         batch.dispose()
         img.dispose()
-    }
-
-    private fun drawMogul() {
     }
 }
