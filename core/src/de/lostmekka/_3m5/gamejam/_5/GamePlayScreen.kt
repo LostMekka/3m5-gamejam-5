@@ -8,7 +8,7 @@ import ktx.app.KtxScreen
 import ktx.graphics.use
 
 class GamePlayScreen : KtxScreen {
-    val batch = SpriteBatch()
+    private val batch = SpriteBatch()
     private val img = Texture("badlogic.jpg")
 
     override fun render(delta: Float) {
