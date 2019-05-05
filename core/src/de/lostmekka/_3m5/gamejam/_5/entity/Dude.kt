@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import de.lostmekka._3m5.gamejam._5.dudeHP
-import de.lostmekka._3m5.gamejam._5.dudeSpeed
-import de.lostmekka._3m5.gamejam._5.dudesight
-import de.lostmekka._3m5.gamejam._5.splitSpriteSheet
+import de.lostmekka._3m5.gamejam._5.*
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
@@ -18,7 +15,7 @@ import ktx.math.plus
 import ktx.math.times
 import ktx.math.vec2
 
-class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
+class Dude(override val world: World, position: Vector2 = Vector2.Zero) : PhysicsBodyActor() {
     private val dress = Texture("dude-dress.png")
     private val hat = Texture("dude-hat.png")
             .splitSpriteSheet(24, 32)
@@ -79,18 +76,14 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        val resetColor = batch.color
-
         batch.color = dressColor
-        batch.draw(dress, x, y, 0.75f, 1f)
+        drawTexture(batch, dress)
 
         val headIndex = 1
         batch.color = skinColor
-        batch.draw(headhands[headIndex], x, y, 0.75f, 1f)
+        drawTexture(batch, headhands[headIndex])
 
         batch.color = hatColor
-        batch.draw(hat[headIndex], x, y, 0.75f, 1f)
-
-        batch.color = resetColor
+        drawTexture(batch, hat[headIndex])
     }
 }

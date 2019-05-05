@@ -35,8 +35,14 @@ class GamePlayScreen : KtxScreen {
     private val stage = Stage(viewport).apply {
         addActor(mogul)
         addActor(Tower(world, vec2(5f, 2f)))
-        addActor(Dude(world, vec2(-2f, 1f)).also {
-            it.dressColor = Color.GRAY
+        addActor(DudeSpawner(vec2(0f, 5f)) {
+            Dude(world).also { it.dressColor = Color.RED }
+        })
+        addActor(DudeSpawner(vec2(-5f, 3f)) {
+            Dude(world).also { it.dressColor = Color.MAROON }
+        })
+        addActor(DudeSpawner(vec2(8f, -6f)) {
+            Dude(world).also { it.dressColor = Color.FIREBRICK }
         })
     }
 
@@ -64,6 +70,10 @@ class GamePlayScreen : KtxScreen {
         batch.use {
             // draw textures that are not managed by stage
             ground.draw(batch)
+        }
+
+        stage.actors.sort { actorA, actorB ->
+            if (actorA.y > actorB.y) -1 else 1
         }
 
         stage.draw()

@@ -12,3 +12,5 @@ const val towerAttackRadius = 5f
 const val dudeHP = 10
 const val dudesight = 16f
 const val dudeSpeed = 0.3f
+
+const val dudeSpawnerCooldown = 2f

@@ -28,6 +28,7 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.color = color
         drawTexture(batch, texture)
     }
 
