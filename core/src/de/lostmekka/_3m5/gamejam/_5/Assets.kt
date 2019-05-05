@@ -14,8 +14,28 @@ import ktx.collections.toGdxArray
 object Textures {
     val magistrate by lazy { Texture("magistrate.png") }
     val caravanPost by lazy { Texture("caravan post.png") }
-    val mogul by lazy { Texture("mogul.png") }
     val tower by lazy { Texture("tower.png") }
+    val groundAtlas by lazy {
+        Texture("ground.png")
+                .filterNearest()
+                .splitSpriteSheet(16, 16)
+    }
+    val mogulAtlas by lazy {
+        Texture("mogul.png")
+                .filterNearest()
+                .splitSpriteSheet(24, 32)
+                .toAnimation(0.5f)
+    }
+    val dress = Texture("dude-dress.png")
+    val hat = Texture("dude-hat.png")
+            .splitSpriteSheet(24, 32)
+    val headhands = Texture("dude-headhands.png")
+            .splitSpriteSheet(24, 32)
+}
+
+fun Texture.filterNearest(): Texture {
+    setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
+    return this
 }
 
 fun Texture.splitSpriteSheet(spriteWidth: Int, spriteHeight: Int): List<TextureRegion> {
@@ -26,11 +46,11 @@ fun Texture.splitSpriteSheet(spriteWidth: Int, spriteHeight: Int): List<TextureR
 }
 
 fun List<TextureRegion>.toAnimation(frameDelay: Float): StatefulAnimation<TextureRegion> =
-    StatefulAnimation(Animation<TextureRegion>(frameDelay, this.toGdxArray(), Animation.PlayMode.LOOP))
+        StatefulAnimation(Animation<TextureRegion>(frameDelay, this.toGdxArray(), Animation.PlayMode.LOOP))
 
 class StatefulAnimation<T>(
-    val gdxAnimation: Animation<T>,
-    var state: Float = 0f
+        val gdxAnimation: Animation<T>,
+        var state: Float = 0f
 ) {
     val currentRegion get() = gdxAnimation.getKeyFrame(state)
 

@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.World
-import de.lostmekka._3m5.gamejam._5.MogulSpeed
-import de.lostmekka._3m5.gamejam._5.drawTexture
-import de.lostmekka._3m5.gamejam._5.splitSpriteSheet
-import de.lostmekka._3m5.gamejam._5.toAnimation
+import de.lostmekka._3m5.gamejam._5.*
 import ktx.box2d.body
 import ktx.math.minus
 import ktx.math.plus
@@ -24,10 +21,7 @@ class Mogul(override val world: World, position: Vector2) : PhysicsBodyActor() {
         box(width = 1f, height = 1f)
     }
 
-    private val animation = Texture("mogul.png")
-        .also { it.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest) }
-        .splitSpriteSheet(24, 32)
-        .toAnimation(0.5f)
+    private val animation = Textures.mogulAtlas
 
     var movementTarget: Vector2? = null
 

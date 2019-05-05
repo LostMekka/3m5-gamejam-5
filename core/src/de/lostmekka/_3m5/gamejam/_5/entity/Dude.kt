@@ -16,11 +16,9 @@ import ktx.math.times
 import ktx.math.vec2
 
 class Dude(override val world: World, position: Vector2 = Vector2.Zero) : PhysicsBodyActor() {
-    private val dress = Texture("dude-dress.png")
-    private val hat = Texture("dude-hat.png")
-            .splitSpriteSheet(24, 32)
-    private val headhands = Texture("dude-headhands.png")
-            .splitSpriteSheet(24, 32)
+    private val dress = Textures.dress
+    private val hat = Textures.hat
+    private val headhands = Textures.headhands
 
     private var hp = dudeHP
     private var cooldown = 0f

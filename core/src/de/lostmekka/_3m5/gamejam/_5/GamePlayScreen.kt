@@ -5,15 +5,11 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import de.lostmekka._3m5.gamejam._5.entity.Dude
-import de.lostmekka._3m5.gamejam._5.entity.Mogul
-import de.lostmekka._3m5.gamejam._5.entity.PhysicsBodyActor
-import de.lostmekka._3m5.gamejam._5.entity.Tower
+import de.lostmekka._3m5.gamejam._5.entity.*
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.graphics.use
@@ -25,9 +21,7 @@ class GamePlayScreen : KtxScreen {
     private val shapeRenderer = ShapeRenderer()
     private val world = createWorld()
 
-    private val groundAtlas = Texture("ground.png")
-        .also { it.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest) }
-        .splitSpriteSheet(16, 16)
+    private val groundAtlas = Textures.groundAtlas
     private val ground = Ground(groundAtlas)
 
     private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
@@ -44,6 +38,8 @@ class GamePlayScreen : KtxScreen {
         addActor(DudeSpawner(vec2(8f, -6f)) {
             Dude(world).also { it.dressColor = Color.FIREBRICK }
         })
+        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
+        addActor(Magistrate(world, vec2(8.2f, 4.1f)))
     }
 
     private fun handleInput() {
