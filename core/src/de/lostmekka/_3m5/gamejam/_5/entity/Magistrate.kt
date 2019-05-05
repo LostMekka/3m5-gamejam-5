@@ -24,6 +24,8 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
     }
     override val connectionOrigin get() = vec2(x + originX, y + originY)
 
+    var isActive = false
+
     private var hp = magistrateHP
     private val texture = Textures.magistrate
 
@@ -36,13 +38,10 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
     override fun damage(amount: Int) {
         hp = max(0, hp - amount)
         if (hp <= 0) {
-            removeFromStageAndPhysicsWorld()
-            handleDeath()
+            isActive = false
+            clearConnections()
+            Sounds.destroyBuilding.play()
         }
-    }
-
-    override fun onDeath() {
-
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

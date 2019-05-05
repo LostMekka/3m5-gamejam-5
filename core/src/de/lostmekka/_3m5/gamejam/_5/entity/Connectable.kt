@@ -9,8 +9,6 @@ interface Connectable {
     val connections: MutableList<Connectable>
     val isBase: Boolean
     val connectionOrigin: Vector2
-
-    fun onDeath()
 }
 
 fun Connectable.connect(other: Connectable) {
@@ -18,53 +16,25 @@ fun Connectable.connect(other: Connectable) {
     other.connections.add(this)
 }
 
-fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable> {
-    if (isBase) return listOf()
-    val dyingEntities = mutableListOf<Connectable>()
-    var magistrateCount = 0
-    if (hasMogulAccess) magistrateCount++
-
-    for (child in connections) {
-        var childHasConnectionToBase = false
-        val toExpand = mutableListOf(child)
-        val expanded = mutableListOf<Connectable>()
-        val linedUpEntities = mutableListOf(child)
-        var isSingleLine = true
-        while (!childHasConnectionToBase && toExpand.isNotEmpty()) {
-            val current = toExpand.removeAt(0)
-            if (current.isBase) {
-                childHasConnectionToBase = true
-                break
-            }
-            expanded += current
-            val nextConnections = current.connections.filter { next -> expanded.none { it === next } }
-            toExpand += nextConnections
-            isSingleLine = isSingleLine && nextConnections.size == 1
-            if (isSingleLine) linedUpEntities += current
+fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): Boolean {
+    if (isBase || hasMogulAccess) return false
+    val toExpand = mutableListOf(this)
+    val expanded = mutableListOf<Connectable>()
+    val bases = mutableListOf<Connectable>()
+    while (toExpand.isNotEmpty()) {
+        val current = toExpand.removeAt(0)
+        if (current.isBase) {
+            if (current !in bases) bases += current
+            if (bases.size > 1) return false
         }
-        if (childHasConnectionToBase) {
-            magistrateCount++
-        } else {
-            dyingEntities += linedUpEntities
-        }
+        expanded += current
+        toExpand += current.connections.filter { next -> expanded.none { it === next } }
     }
-
-    return if (magistrateCount >= 2) listOf() else dyingEntities
+    return true
 }
 
 fun Connectable.handleDeath() {
-    val connections = connections.toList()
-
     this.clearConnections()
-
-    for (connection in connections) {
-
-        val valhalla = connection.testForBuildingDeath(false)
-        for (dead in valhalla) {
-            dead.clearConnections()
-            dead.onDeath()
-        }
-    }
 }
 
 fun Connectable.clearConnections() {

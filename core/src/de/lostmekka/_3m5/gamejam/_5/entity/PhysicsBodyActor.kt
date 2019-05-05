@@ -27,13 +27,11 @@ abstract class PhysicsBodyActor : Actor() {
 
     override fun setHeight(height: Float) {
         super.setHeight(height)
-        println("setHeight")
         originY = height / 2
     }
 
     override fun setWidth(width: Float) {
         super.setWidth(width)
-        println("setWidth")
         originX = width / 2
     }
 

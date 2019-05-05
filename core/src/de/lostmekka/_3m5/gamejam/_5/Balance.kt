@@ -36,7 +36,8 @@ const val mogulHP = 50
 val buildPreviewGood = Color(0f, 1f, 0.3f, 0.5f)
 val buildPreviewBad = Color(1f, 0f, 0f, 0.5f)
 const val buildCaravanPostMogulDistance = 5f
-const val buildCaravanPostPostDistance = 5f
-const val buildCaravanPostMagistrateDistance = 5f
+const val buildCaravanPostPostDistance = 3f
+const val buildCaravanPostMagistrateDistance = 3f
 
 const val maxDotDistance = 0.5f
+const val postDeathCheckInterval = 2f

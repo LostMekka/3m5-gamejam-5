@@ -73,20 +73,33 @@ class GamePlayScreen : KtxScreen {
         userInputHandler.handleInput(stageCoords)
     }
 
+    private var deathCheckTimer = postDeathCheckInterval
     private fun update(delta: Float) {
         stage.camera.position.set(0f, 0f, stage.camera.position.z)
 
         world.step(delta, 5, 5)
         for (actor in stage.actors) if (actor is PhysicsBodyActor) actor.updatePhysics()
+
+        deathCheckTimer -= delta
+        if (deathCheckTimer <= 0) {
+            println()
+            deathCheckTimer += postDeathCheckInterval
+            val lonePosts = stage.actors
+                .mapNotNull { it as? CaravanPost }
+                .filter { it.connections.size <= 1 }
+            for (lonePost in lonePosts) {
+                val hasMogul = lonePost.position.dst(mogul.position) <= buildCaravanPostPostDistance
+                println("${lonePost.position} --> $hasMogul")
+                if (lonePost.testForBuildingDeath(hasMogul)) lonePost.destroy()
+            }
+        }
         stage.act(delta)
 
         for (laser in lasers) laser.update(delta)
         lasers.removeAll { it.isDone }
 
         amount = slaves.toString()
-
     }
-
 
     private fun draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)

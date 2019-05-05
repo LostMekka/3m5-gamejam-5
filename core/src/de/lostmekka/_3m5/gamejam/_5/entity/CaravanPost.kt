@@ -41,14 +41,13 @@ class CaravanPost(override val world: World, position: Vector2) : PhysicsBodyAct
 
    override fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0) {
-            onDeath()
-            handleDeath()
-        }
+        if (hp <= 0) destroy()
     }
 
-    override fun onDeath() {
+    fun destroy() {
+        hp = 0
         removeFromStageAndPhysicsWorld()
+        clearConnections()
         Sounds.destroyBuilding.play()
     }
 }
