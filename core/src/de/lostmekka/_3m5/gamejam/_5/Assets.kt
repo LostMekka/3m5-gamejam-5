@@ -40,6 +40,10 @@ object Sounds {
     val initiateBuildMode by lazy { sound("switch-to-construction-mode.ogg") }
 }
 
+object Music {
+    // TODO: add music here
+}
+
 class SoundWithVolume(val sound: Sound, val volume: Float) {
     fun play() = sound.play(volume)
 }
