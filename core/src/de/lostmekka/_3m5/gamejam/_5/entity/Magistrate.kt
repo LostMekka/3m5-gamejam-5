@@ -1,5 +1,6 @@
 package de.lostmekka._3m5.gamejam._5.entity
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
@@ -25,8 +26,12 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
     override val connectionOrigin get() = vec2(x + originX, y + originY)
 
     var isActive = false
+        set(value) {
+            field = value
+            color = if (value) Color.WHITE else Color.GRAY
+        }
 
-    private var hp = magistrateHP
+    var hp = magistrateHP
     private val texture = Textures.magistrate
 
     init {

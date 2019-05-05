@@ -76,9 +76,9 @@ class UserInputHandler(
     private fun canBuildTower(state: State.BuildTower): Boolean {
         val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
         val caravanPostIsNear = isNear<CaravanPost>(coords, buildCaravanPostPostDistance)
-        val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance)
+        val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance) { it.isActive }
 
-        return mogulIsNear && (caravanPostIsNear || magistrateIsNear)&&(slaves >= towerCosts)
+        return mogulIsNear && (caravanPostIsNear || magistrateIsNear) && (slaves >= towerCosts)
     }
 
     private fun handleSecondaryAction(coords: Vector2) {
@@ -98,8 +98,10 @@ class UserInputHandler(
             State.Nothing -> {
                 when (actor) {
                     is Magistrate -> {
-                        this.state = State.BuildCaravanPost(actor)
-                        Sounds.initiateBuildMode.play()
+                        if (actor.isActive) {
+                            this.state = State.BuildCaravanPost(actor)
+                            Sounds.initiateBuildMode.play()
+                        }
                     }
                     is CaravanPost -> {
                         this.state = State.BuildCaravanPost(actor)
@@ -127,6 +129,8 @@ class UserInputHandler(
         when (actor) {
             is Magistrate -> {
                 if (source is Connectable) source.connect(actor)
+                actor.hp = magistrateHP
+                actor.isActive = true
                 Sounds.click.play()
             }
             null -> {
@@ -145,12 +149,11 @@ class UserInputHandler(
         slaves -= towerCosts
     }
 
-    private inline fun <reified T> isNear(coords: Vector2, dst: Float): Boolean {
+    private inline fun <reified T> isNear(coords: Vector2, dst: Float, noinline predicate: (T) -> Boolean = { true }): Boolean {
         val acc = mutableListOf<T>()
-        world.query(
-            coords.x - dst, coords.y - dst, coords.x + dst, coords.y + dst
-        ) {
-            if (it.body.userData is T) acc.add(it.body.userData as T)
+        world.query(coords.x - dst, coords.y - dst, coords.x + dst, coords.y + dst) {
+            val entity = it.body.userData
+            if (entity is T && predicate(entity)) acc.add(entity as T)
             Query.CONTINUE
         }
         return acc.size > 0

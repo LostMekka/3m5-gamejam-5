@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.ScreenViewport
 import de.lostmekka._3m5.gamejam._5.entity.*
+import de.lostmekka._3m5.gamejam._5.helper.addActor
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.graphics.use
@@ -39,12 +40,9 @@ class GamePlayScreen : KtxScreen {
     private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
     private val mogul = Mogul(world, vec2(-7.5f, -2.7f))
     private val stage = Stage(viewport).apply {
-        addActor(createTower(vec2(-8.4f, -4f)))
-        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
         addActor(mogul)
         addActor(createTower(vec2(-8.4f, 0f)))
-
-
+        addActor(createTower(vec2(-8.4f, -4f)))
 
         addActor(DudeSpawner(vec2(0f, 7f)) {
             Dude(world).also { it.dressColor = Color.RED }
@@ -56,9 +54,9 @@ class GamePlayScreen : KtxScreen {
             Dude(world).also { it.dressColor = Color.FIREBRICK }
         })
 
-
-        addActor(Magistrate(world, vec2(8.2f, 4.1f)))
-        addActor(Magistrate(world, vec2(6.2f, -5.1f)))
+        addActor(Magistrate(world, vec2(-8.4f, -2.6f))) { isActive = true }
+        addActor(Magistrate(world, vec2(7.8f, 4.1f))) { isActive = false }
+        addActor(Magistrate(world, vec2(-0.1f, -5.1f))) { isActive = false }
     }
 
     private val lasers = mutableListOf<Laser>()

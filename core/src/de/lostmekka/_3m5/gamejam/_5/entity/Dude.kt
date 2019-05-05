@@ -77,7 +77,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             val magistrates = mutableListOf<Magistrate>()
             world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
                 val magistrate = it.body.userData as? Magistrate
-                if (magistrate != null) {
+                if (magistrate != null && magistrate.isActive) {
                     magistrates.add(magistrate)
                 }
                 Query.CONTINUE
@@ -88,13 +88,16 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             }
             val mogul = stage.actors.find { it is Mogul } as Mogul?
 
-            if (tower != null && tower.position.x - x in -towerAttackRadius..towerAttackRadius
-                    && tower.position.y - y in -towerAttackRadius..towerAttackRadius) {
+            if (
+                tower != null
+                && tower.position.x - x in -towerAttackRadius..towerAttackRadius
+                && tower.position.y - y in -towerAttackRadius..towerAttackRadius
+            ) {
                 target = tower
-            }else{
+            } else {
                 val list = listOf<PhysicsBodyActor?>(caravanpost, magistrate, mogul)
                 target = list.minBy {
-                    if(it != null)Vector2(it.x, it.y).dst2(body.position)
+                    if (it != null) Vector2(it.x, it.y).dst2(body.position)
                     else
                         Float.MAX_VALUE
                 }
@@ -124,7 +127,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
 
     fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0){
+        if (hp <= 0) {
             slaves++
             removeFromStageAndPhysicsWorld()
         }
