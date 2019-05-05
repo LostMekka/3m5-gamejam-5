@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import de.lostmekka._3m5.gamejam._5.entity.CaravanPost
 import de.lostmekka._3m5.gamejam._5.entity.Magistrate
@@ -14,10 +13,12 @@ import de.lostmekka._3m5.gamejam._5.entity.Mogul
 import de.lostmekka._3m5.gamejam._5.entity.Tower
 import de.lostmekka._3m5.gamejam._5.helper.randomElement
 
-enum class PrimaryActionState {
-    Nothing,
-    BuildCaravanPoint,
-    BuildTower
+private sealed class State {
+    object Nothing : State()
+    interface Build {
+        object CaravanPost : State(), Build
+        object Tower : State(), Build
+    }
 }
 
 class UserInputHandler(
@@ -26,7 +27,7 @@ class UserInputHandler(
     private val world: World,
     private val createTower: (pos: Vector2) -> Tower
 ) {
-    private var state = PrimaryActionState.Nothing
+    private var state: State = State.Nothing
     private var right = false
     private var left = false
     private var coords: Vector2 = Vector2.Zero
@@ -47,15 +48,11 @@ class UserInputHandler(
 
     fun draw(batch: Batch) {
         batch.color = Color(0f, 1f, 0.3f, 0.5f)
-
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (state) {
-            PrimaryActionState.BuildCaravanPoint -> previewCaravanPoint(batch)
-            PrimaryActionState.BuildTower -> previewTower(batch)
+            State.Build.CaravanPost -> previewCaravanPoint(batch)
+            State.Build.Tower -> previewTower(batch)
         }
     }
-
-    //
 
     private fun previewCaravanPoint(batch: Batch) {
         batch.draw(Textures.caravanPost, coords.x, coords.y, 1f, 1f)
@@ -66,46 +63,44 @@ class UserInputHandler(
     }
 
     private fun handleSecondaryAction(coords: Vector2) {
-        mogul.movementTarget = coords
-        Sounds.mogulMove.randomElement().play()
+        when (state) {
+            State.Nothing -> {
+                mogul.movementTarget = coords
+                Sounds.mogulMove.randomElement().play()
+            }
+            is State.Build -> state = State.Nothing
+        }
     }
 
     private fun handlePrimaryAction(coords: Vector2) {
         val actor = stage.hit(coords.x, coords.y, true)
-        if (actor != null) {
-            actOnActor(actor, coords)
-        } else {
-            actOnEmptySpace(coords)
-        }
-    }
-
-    private fun actOnActor(actor: Actor, coords: Vector2) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (state) {
-            PrimaryActionState.Nothing -> when (actor) {
-                is Magistrate -> {
-                    state = PrimaryActionState.BuildCaravanPoint
-                }
-                is CaravanPost -> {
-                    state = PrimaryActionState.BuildCaravanPoint
-                }
-                is Mogul -> {
-                    state = PrimaryActionState.BuildTower
+            State.Nothing -> {
+                when (actor) {
+                    is Magistrate, is CaravanPost -> {
+                        state = State.Build.CaravanPost
+                        Sounds.initiateBuildMode.play()
+                    }
+                    is Mogul -> {
+                        state = State.Build.Tower
+                        Sounds.initiateBuildMode.play()
+                    }
                 }
             }
-        }
-    }
-
-    private fun actOnEmptySpace(coords: Vector2) {
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (state) {
-            PrimaryActionState.BuildCaravanPoint -> {
-                state = PrimaryActionState.Nothing
-                buildCaravanPoint(coords)
-            }
-            PrimaryActionState.BuildTower -> {
-                state = PrimaryActionState.Nothing
-                buildTower(coords)
+            is State.Build -> {
+                when {
+                    actor != null && state is State.Build.CaravanPost -> {
+                        // TODO: build post connection only
+                    }
+                    state is State.Build.CaravanPost -> {
+                        buildCaravanPoint(coords)
+                        state = State.Nothing
+                    }
+                    state is State.Build.Tower -> {
+                        state = State.Nothing
+                        buildTower(coords)
+                    }
+                }
             }
         }
     }
