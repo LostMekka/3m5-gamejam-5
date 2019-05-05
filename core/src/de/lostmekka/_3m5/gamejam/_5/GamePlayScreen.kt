@@ -64,6 +64,8 @@ class GamePlayScreen : KtxScreen {
 
     private val userInputHandler = UserInputHandler(mogul, stage, world, ::createTower)
 
+    private val theSongOfMyPeople = Music.musicTheMurkyMogul.play()
+
     private fun handleInput() {
         val screenCoords = vec2(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
         val stageCoords = stage.screenToStageCoordinates(screenCoords)
