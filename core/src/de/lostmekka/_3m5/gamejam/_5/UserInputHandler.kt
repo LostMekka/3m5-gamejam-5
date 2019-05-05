@@ -2,23 +2,21 @@ package de.lostmekka._3m5.gamejam._5
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
-import de.lostmekka._3m5.gamejam._5.entity.CaravanPost
-import de.lostmekka._3m5.gamejam._5.entity.Magistrate
-import de.lostmekka._3m5.gamejam._5.entity.Mogul
-import de.lostmekka._3m5.gamejam._5.entity.Tower
+import de.lostmekka._3m5.gamejam._5.entity.*
 import de.lostmekka._3m5.gamejam._5.helper.randomElement
+import ktx.box2d.Query
+import ktx.box2d.query
 
 private sealed class State {
     object Nothing : State()
-    interface Build {
-        object CaravanPost : State(), Build
-        object Tower : State(), Build
-    }
+    interface Build
+    class BuildCaravanPost(val source: PhysicsBodyActor) : State(), Build
+    class BuildTower(val source: PhysicsBodyActor) : State(), Build
 }
 
 class UserInputHandler(
@@ -47,24 +45,41 @@ class UserInputHandler(
     }
 
     fun draw(batch: Batch) {
-        batch.color = Color(0f, 1f, 0.3f, 0.5f)
+        val state = state
         when (state) {
-            State.Build.CaravanPost -> previewCaravanPoint(batch)
-            State.Build.Tower -> previewTower(batch)
+            is State.BuildCaravanPost -> previewCaravanPost(batch, state)
+            is State.BuildTower -> previewTower(batch, state)
         }
     }
 
-    private fun previewCaravanPoint(batch: Batch) {
+    //
+
+    private fun previewCaravanPost(batch: Batch, state: State.BuildCaravanPost) {
+        val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
+
+        val distance = buildCaravanPostDistance(state.source)
+        var sourceIsNear = state.source.position.dst(coords) < distance
+
+        val buildAllowed = mogulIsNear && sourceIsNear
+
+        batch.color = if (buildAllowed) buildPreviewGood else buildPreviewBad
         batch.draw(Textures.caravanPost, coords.x, coords.y, 1f, 1f)
     }
 
-    private fun previewTower(batch: Batch) {
+    private fun previewTower(batch: Batch, state: State.BuildTower) {
+        val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
+        val caravanPostIsNear = isNear<CaravanPost>(coords, buildCaravanPostPostDistance)
+        val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance)
+
+        val buildAllowed = mogulIsNear && (caravanPostIsNear || magistrateIsNear)
+
+        batch.color = if (buildAllowed) buildPreviewGood else buildPreviewBad
         batch.draw(Textures.tower, coords.x, coords.y, 1f, 1.25f)
     }
 
     private fun handleSecondaryAction(coords: Vector2) {
         when (state) {
-            State.Nothing -> {
+            is State.Nothing -> {
                 mogul.movementTarget = coords
                 Sounds.mogulMove.randomElement().play()
             }
@@ -73,43 +88,66 @@ class UserInputHandler(
     }
 
     private fun handlePrimaryAction(coords: Vector2) {
-        val actor = stage.hit(coords.x, coords.y, true)
+        val actor: Actor? = stage.hit(coords.x, coords.y, true)
         when (state) {
             State.Nothing -> {
                 when (actor) {
-                    is Magistrate, is CaravanPost -> {
-                        state = State.Build.CaravanPost
+                    is Magistrate -> {
+                        state = State.BuildCaravanPost(actor)
+                        Sounds.initiateBuildMode.play()
+                    }
+                    is CaravanPost -> {
+                        state = State.BuildCaravanPost(actor)
                         Sounds.initiateBuildMode.play()
                     }
                     is Mogul -> {
-                        state = State.Build.Tower
+                        state = State.BuildTower(actor)
                         Sounds.initiateBuildMode.play()
                     }
                 }
             }
             is State.Build -> {
-                when {
-                    actor != null && state is State.Build.CaravanPost -> {
-                        // TODO: build post connection only
-                    }
-                    state is State.Build.CaravanPost -> {
-                        buildCaravanPoint(coords)
+                when (state) {
+                    is State.BuildCaravanPost -> {
+                        buildCaravanPost(coords, actor)
                         state = State.Nothing
                     }
-                    state is State.Build.Tower -> {
-                        state = State.Nothing
+                    is State.BuildTower -> {
                         buildTower(coords)
+                        state = State.Nothing
                     }
                 }
             }
         }
     }
 
-    private fun buildCaravanPoint(coords: Vector2) {
-        stage.addActor(CaravanPost(world, coords))
+    private fun buildCaravanPost(coords: Vector2, actor: Actor?) {
+        when (actor) {
+            is Magistrate -> {
+                // TODO: build post connection only
+            }
+            null -> stage.addActor(CaravanPost(world, coords))
+        }
     }
 
     private fun buildTower(coords: Vector2) {
         stage.addActor(createTower(coords))
+    }
+
+    private inline fun <reified T> isNear(coords: Vector2, dst: Float): Boolean {
+        val acc = mutableListOf<T>()
+        world.query(
+            coords.x - dst, coords.y - dst, coords.x + dst, coords.y + dst
+        ) {
+            if (it.body.userData is T) acc.add(it.body.userData as T)
+            Query.CONTINUE
+        }
+        return acc.size > 0
+    }
+
+    private fun buildCaravanPostDistance(source: PhysicsBodyActor) = when (source) {
+        is CaravanPost -> buildCaravanPostPostDistance
+        is Magistrate -> buildCaravanPostMagistrateDistance
+        else -> 0f
     }
 }
