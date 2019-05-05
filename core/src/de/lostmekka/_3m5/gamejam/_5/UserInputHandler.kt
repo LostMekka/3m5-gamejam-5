@@ -55,26 +55,30 @@ class UserInputHandler(
     //
 
     private fun previewCaravanPost(batch: Batch, state: State.BuildCaravanPost) {
+        batch.color = if (canBuildCaravanPost(state)) buildPreviewGood else buildPreviewBad
+        batch.draw(Textures.caravanPost, coords.x, coords.y, 1f, 1f)
+    }
+
+    private fun previewTower(batch: Batch, state: State.BuildTower) {
+        batch.color = if (canBuildTower(state)) buildPreviewGood else buildPreviewBad
+        batch.draw(Textures.tower, coords.x, coords.y, 1f, 1.25f)
+    }
+
+    private fun canBuildCaravanPost(state: State.BuildCaravanPost) : Boolean {
         val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
 
         val distance = buildCaravanPostDistance(state.source)
         var sourceIsNear = state.source.position.dst(coords) < distance
 
-        val buildAllowed = mogulIsNear && sourceIsNear
-
-        batch.color = if (buildAllowed) buildPreviewGood else buildPreviewBad
-        batch.draw(Textures.caravanPost, coords.x, coords.y, 1f, 1f)
+        return mogulIsNear && sourceIsNear
     }
 
-    private fun previewTower(batch: Batch, state: State.BuildTower) {
+    private fun canBuildTower(state: State.BuildTower) : Boolean {
         val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
         val caravanPostIsNear = isNear<CaravanPost>(coords, buildCaravanPostPostDistance)
         val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance)
 
-        val buildAllowed = mogulIsNear && (caravanPostIsNear || magistrateIsNear)
-
-        batch.color = if (buildAllowed) buildPreviewGood else buildPreviewBad
-        batch.draw(Textures.tower, coords.x, coords.y, 1f, 1.25f)
+        return mogulIsNear && (caravanPostIsNear || magistrateIsNear)
     }
 
     private fun handleSecondaryAction(coords: Vector2) {
@@ -89,34 +93,31 @@ class UserInputHandler(
 
     private fun handlePrimaryAction(coords: Vector2) {
         val actor: Actor? = stage.hit(coords.x, coords.y, true)
+        val state = state
         when (state) {
             State.Nothing -> {
                 when (actor) {
                     is Magistrate -> {
-                        state = State.BuildCaravanPost(actor)
+                        this.state = State.BuildCaravanPost(actor)
                         Sounds.initiateBuildMode.play()
                     }
                     is CaravanPost -> {
-                        state = State.BuildCaravanPost(actor)
+                        this.state = State.BuildCaravanPost(actor)
                         Sounds.initiateBuildMode.play()
                     }
                     is Mogul -> {
-                        state = State.BuildTower(actor)
+                        this.state = State.BuildTower(actor)
                         Sounds.initiateBuildMode.play()
                     }
                 }
             }
-            is State.Build -> {
-                when (state) {
-                    is State.BuildCaravanPost -> {
-                        buildCaravanPost(coords, actor)
-                        state = State.Nothing
-                    }
-                    is State.BuildTower -> {
-                        buildTower(coords)
-                        state = State.Nothing
-                    }
-                }
+            is State.BuildCaravanPost -> if (canBuildCaravanPost(state)) {
+                buildCaravanPost(coords, actor)
+                this.state = State.Nothing
+            }
+            is State.BuildTower -> if (canBuildTower(state)) {
+                buildTower(coords)
+                this.state = State.Nothing
             }
         }
     }
@@ -125,13 +126,18 @@ class UserInputHandler(
         when (actor) {
             is Magistrate -> {
                 // TODO: build post connection only
+                Sounds.click.play()
             }
-            null -> stage.addActor(CaravanPost(world, coords))
+            null -> {
+                stage.addActor(CaravanPost(world, coords))
+                Sounds.build.play()
+            }
         }
     }
 
     private fun buildTower(coords: Vector2) {
         stage.addActor(createTower(coords))
+        Sounds.build.play()
     }
 
     private inline fun <reified T> isNear(coords: Vector2, dst: Float): Boolean {
