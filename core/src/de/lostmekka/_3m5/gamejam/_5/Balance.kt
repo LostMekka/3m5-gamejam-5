@@ -15,3 +15,5 @@ const val dudesight = 16f
 const val dudeSpeed = 0.3f
 
 const val dudeSpawnerCooldown = 2f
+const val dudeSpawnerRandomX = 3f
+const val dudeSpawnerRandomY = 3f
