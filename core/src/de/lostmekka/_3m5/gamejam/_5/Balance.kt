@@ -17,3 +17,5 @@ const val dudeMeleeRadius = 0.2f
 const val dudeMeleeCooldown = 1f
 
 const val dudeSpawnerCooldown = 2f
+const val dudeSpawnerRandomX = 3f
+const val dudeSpawnerRandomY = 3f
