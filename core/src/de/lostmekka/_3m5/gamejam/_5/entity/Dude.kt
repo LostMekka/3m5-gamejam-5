@@ -19,6 +19,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
     private val dress = Textures.dress
     private val hat = Textures.hat
     private val headhands = Textures.headhands
+    private var target: PhysicsBodyActor? = null
 
     private var hp = dudeHP
     private var cooldown = 0f
@@ -39,42 +40,86 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
     var skinColor = Color(1f, 1f, 1f, 1f)
 
     override fun act(dt: Float) {
-        super.act(dt)
+        if (stage == null) return
+        else {
+            super.act(dt)
 
-        val towers = mutableListOf<Tower>()
-
-        world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
-            val tower = it.body.userData as? Tower
-            if (tower != null) {
-                towers.add(tower)
-            }
-            Query.CONTINUE
-        }
-
-        val tower = towers.minBy {
-            Vector2(it.x, it.y).dst2(body.position)
-        }
-
-
-        cooldown -= dt
-
-
-        if (tower != null) {
-            val pos = vec2(x, y)
-            val target = tower.position
-            val distanceToTarget = pos.dst(target)
-            val distanceThisFrame = dt * dudeSpeed
-            if (distanceThisFrame >= distanceToTarget) {
-                position = vec2(target.x, target.y)
-                if (isInRange(tower) && cooldown <= 0f) {
-                    tower.damage(dudeMeleeDamage)
-                    cooldown = dudeMeleeCooldown
+            val towers = mutableListOf<Tower>()
+            world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
+                val tower = it.body.userData as? Tower
+                if (tower != null) {
+                    towers.add(tower)
                 }
-            } else {
-                position += (target - pos) * (distanceThisFrame / distanceToTarget)
+                Query.CONTINUE
             }
+
+            val tower = towers.minBy {
+                Vector2(it.x, it.y).dst2(body.position)
+            }
+
+
+            cooldown -= dt
+
+
+            val caravanposts = mutableListOf<CaravanPost>()
+            world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
+                val caravanpost = it.body.userData as? CaravanPost
+                if (caravanpost != null) {
+                    caravanposts.add(caravanpost)
+                }
+                Query.CONTINUE
+            }
+
+            val caravanpost = caravanposts.minBy {
+                Vector2(it.x, it.y).dst2(body.position)
+            }
+
+            val magistrates = mutableListOf<Magistrate>()
+            world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
+                val magistrate = it.body.userData as? Magistrate
+                if (magistrate != null) {
+                    magistrates.add(magistrate)
+                }
+                Query.CONTINUE
+            }
+
+            val magistrate = magistrates.minBy {
+                Vector2(it.x, it.y).dst2(body.position)
+            }
+            val mogul = stage.actors.find { it is Mogul } as Mogul?
+            if (mogul != null) {
+                val moguldist = mogul.position.dst(position)
+            }
+            if (caravanpost != null && magistrate != null && mogul != null && tower != null) {
+                val list = listOf<PhysicsBodyActor>(caravanpost, magistrate, mogul)
+                target = list.minBy { Vector2(it.x, it.y).dst2(body.position) }
+                if (tower.position.x - x in -towerAttackRadius..towerAttackRadius
+                        && tower.position.y - y in -towerAttackRadius..towerAttackRadius) {
+                    target = tower
+                }
+            }
+
+            val target = target
+
+            if (target != null) {
+                val pos = vec2(x, y)
+                val direction = target.position
+                val distanceToTarget = pos.dst(direction)
+                val distanceThisFrame = dt * dudeSpeed
+                if (distanceThisFrame >= distanceToTarget) {
+                    position = vec2(direction.x, direction.y)
+                    if (isInRange(target) && cooldown <= 0f) {
+                        if (target is Damageble) target.damage(dudeMeleeDamage)
+                        cooldown = dudeMeleeCooldown
+                    }
+                } else {
+                    position += (direction - pos) * (distanceThisFrame / distanceToTarget)
+                }
+            }
+
         }
     }
+
 
     fun damage(amount: Int) {
         hp = max(0, hp - amount)
@@ -84,8 +129,8 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
         }
     }
 
-    private fun isInRange(tower: Tower) =
-        tower.x - x in -dudeMeleeRadius..dudeMeleeRadius && tower.y - y in -dudeMeleeRadius..dudeMeleeRadius
+    private fun isInRange(target: PhysicsBodyActor) =
+        target.x - x in -dudeMeleeRadius..dudeMeleeRadius && target.y - y in -dudeMeleeRadius..dudeMeleeRadius
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = dressColor
