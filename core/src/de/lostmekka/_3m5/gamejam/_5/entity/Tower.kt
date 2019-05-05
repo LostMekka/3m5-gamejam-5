@@ -12,7 +12,7 @@ import de.lostmekka._3m5.gamejam._5.towerHP
 import de.lostmekka._3m5.gamejam._5.towerAttackRadius
 
 
-class Tower(world: World, position: Vector2) : PhysicsBodyActor(world) {
+class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
     private val texture = Textures.tower
     private var hp = towerHP
 

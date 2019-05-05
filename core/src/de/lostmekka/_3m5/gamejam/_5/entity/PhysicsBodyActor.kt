@@ -4,7 +4,8 @@ import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
 
-abstract class PhysicsBodyActor(val world: World) : Actor() {
+abstract class PhysicsBodyActor : Actor() {
+    abstract val world: World
     abstract val body: Body
 
     var position

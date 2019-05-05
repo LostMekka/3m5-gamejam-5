@@ -17,7 +17,7 @@ import ktx.math.vec2
 /**
  * Copyright 2019 LostMekkaSoft
  */
-class Mogul(world: World, position: Vector2) : PhysicsBodyActor(world) {
+class Mogul(override val world: World, position: Vector2) : PhysicsBodyActor() {
     override val body: Body = world.body {
         userData = this@Mogul
         box(width = 1f, height = 1f)

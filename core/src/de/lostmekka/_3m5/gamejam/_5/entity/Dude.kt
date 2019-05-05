@@ -15,7 +15,7 @@ import ktx.math.minus
 import ktx.math.times
 import ktx.math.vec2
 
-class Dude(world: World, position: Vector2) : PhysicsBodyActor(world) {
+class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
     private val texture = Textures.mogul
     private var hp = dudeHP
 

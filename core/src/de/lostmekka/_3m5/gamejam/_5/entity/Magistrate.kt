@@ -11,7 +11,7 @@ import ktx.box2d.body
  * Copyright 2019 LostMekkaSoft
  */
 
-class Magistrate(world: World, position: Vector2): PhysicsBodyActor(world), Connectable {
+class Magistrate(override val world: World, position: Vector2): PhysicsBodyActor(), Connectable {
     override val connections = mutableListOf<Connectable>()
     override val body = world.body {
         userData = this@Magistrate
