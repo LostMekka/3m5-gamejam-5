@@ -9,6 +9,8 @@ interface Connectable {
     val connections: MutableList<Connectable>
     val isBase: Boolean
     val connectionOrigin: Vector2
+
+    fun clearConnections()
 }
 
 fun Connectable.connect(other: Connectable) {
@@ -48,4 +50,17 @@ fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable>
     }
 
     return if (magistrateCount >= 2) listOf() else dyingEntities
+}
+
+fun Connectable.transitiveClearConnections() {
+    val connections = connections.toList()
+
+    clearConnections()
+
+    for (connection in connections) {
+        val valhalla = connection.testForBuildingDeath(false)
+        for (dead in valhalla) {
+            dead.clearConnections()
+        }
+    }
 }

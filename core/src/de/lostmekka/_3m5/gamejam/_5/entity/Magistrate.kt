@@ -33,11 +33,23 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
 
     override fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0) removeFromStageAndPhysicsWorld()
+        if (hp <= 0) {
+            transitiveClearConnections()
+        }
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = color
         drawTexture(batch, texture)
+    }
+
+    override fun clearConnections() {
+        removeFromStageAndPhysicsWorld()
+
+        for (connection in connections) {
+            connection.connections.remove(this)
+        }
+
+        connections.clear()
     }
 }
