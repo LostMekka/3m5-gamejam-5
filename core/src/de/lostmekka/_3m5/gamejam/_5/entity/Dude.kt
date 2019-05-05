@@ -13,6 +13,7 @@ import ktx.math.minus
 import ktx.math.plus
 import ktx.math.times
 import ktx.math.vec2
+import kotlin.math.max
 
 class Dude(override val world: World, position: Vector2 = Vector2.Zero) : PhysicsBodyActor() {
     private val dress = Textures.dress
@@ -66,18 +67,17 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             if (distanceThisFrame >= distanceToTarget) {
                 position = vec2(target.x, target.y)
                 if (isInRange(tower) && cooldown <= 0f) {
-                    tower.attacked()
+                    tower.damage(dudeMeleeDamage)
                     cooldown = dudeMeleeCooldown
                 }
-
             } else {
                 position += (target - pos) * (distanceThisFrame / distanceToTarget)
             }
         }
     }
 
-    fun attacked() {
-        if (hp > 0) hp--
+    fun damage(amount: Int) {
+        hp = max(0, hp - amount)
         if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 
