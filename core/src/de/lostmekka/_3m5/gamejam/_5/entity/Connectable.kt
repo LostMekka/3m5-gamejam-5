@@ -11,6 +11,11 @@ interface Connectable {
     val connectionOrigin: Vector2
 }
 
+fun Connectable.connect(other: Connectable) {
+    this.connections.add(other)
+    other.connections.add(this)
+}
+
 fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable> {
     if (isBase) return listOf()
     val dyingEntities = mutableListOf<Connectable>()

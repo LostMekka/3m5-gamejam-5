@@ -64,7 +64,7 @@ class UserInputHandler(
         batch.draw(Textures.tower, coords.x, coords.y, 1f, 1.25f)
     }
 
-    private fun canBuildCaravanPost(state: State.BuildCaravanPost) : Boolean {
+    private fun canBuildCaravanPost(state: State.BuildCaravanPost): Boolean {
         val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
 
         val distance = buildCaravanPostDistance(state.source)
@@ -73,7 +73,7 @@ class UserInputHandler(
         return mogulIsNear && sourceIsNear
     }
 
-    private fun canBuildTower(state: State.BuildTower) : Boolean {
+    private fun canBuildTower(state: State.BuildTower): Boolean {
         val mogulIsNear = mogul.position.dst(coords) < buildCaravanPostMogulDistance
         val caravanPostIsNear = isNear<CaravanPost>(coords, buildCaravanPostPostDistance)
         val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance)
@@ -112,7 +112,7 @@ class UserInputHandler(
                 }
             }
             is State.BuildCaravanPost -> if (canBuildCaravanPost(state)) {
-                buildCaravanPost(coords, actor)
+                buildCaravanPost(coords, actor, state)
                 this.state = State.Nothing
             }
             is State.BuildTower -> if (canBuildTower(state)) {
@@ -122,14 +122,17 @@ class UserInputHandler(
         }
     }
 
-    private fun buildCaravanPost(coords: Vector2, actor: Actor?) {
+    private fun buildCaravanPost(coords: Vector2, actor: Actor?, state: State.BuildCaravanPost) {
+        val source = state.source
         when (actor) {
             is Magistrate -> {
                 // TODO: build post connection only
                 Sounds.click.play()
             }
             null -> {
-                stage.addActor(CaravanPost(world, coords))
+                stage.addActor(CaravanPost(world, coords).also {
+                    if (source is Connectable) it.connect(source)
+                })
                 Sounds.build.play()
             }
         }
