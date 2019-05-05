@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.ScreenViewport
 import de.lostmekka._3m5.gamejam._5.entity.*
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
@@ -16,10 +18,21 @@ import ktx.graphics.use
 import ktx.math.vec2
 
 
+
 class GamePlayScreen : KtxScreen {
     private val batch = SpriteBatch()
     private val shapeRenderer = ShapeRenderer()
     private val world = createWorld()
+
+    private val guiviewport = ScreenViewport()
+    private val counter = FreeTypeFontGenerator(Gdx.files.internal("fonts/UbuntuMono-R.ttf")).let {
+        val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
+        parameter.size = 40
+        val font = it.generateFont(parameter)
+        it.dispose()
+        font
+    }
+    private var amount = "Slaves: 0"
 
     private val groundAtlas = Textures.groundAtlas
     private val ground = Ground(groundAtlas)
@@ -68,7 +81,12 @@ class GamePlayScreen : KtxScreen {
 
         for (laser in lasers) laser.update(delta)
         lasers.removeAll { it.isDone }
+
+        amount = "Slaves:" + slaves
+
     }
+
+
 
     private fun draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -90,6 +108,14 @@ class GamePlayScreen : KtxScreen {
             userInputHandler.draw(batch)
         }
 
+        batch.projectionMatrix = guiviewport.camera.projection
+        batch.use {
+            // draw textures that are not managed by stage
+                                                           
+            counter.setColor(0f, 0f, 0f, 1.0f)
+            counter.draw(batch, amount, 0f, (Gdx.graphics.height / 2f) - 0.1f)
+        }
+
         shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
             it.projectionMatrix = stage.camera.projection
             it.setAutoShapeType(true)
@@ -106,6 +132,7 @@ class GamePlayScreen : KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         stage.viewport.update(width, height, true)
+        guiviewport.update(width,height, true)
     }
 
     override fun dispose() {

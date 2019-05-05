@@ -26,3 +26,5 @@ const val dudeSpawnerRandomY = 3f
 
 const val laserLifetime = 0.1f
 val laserColor = Color.GOLD
+
+var slaves = 0

@@ -78,7 +78,10 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
 
     fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0) removeFromStageAndPhysicsWorld()
+        if (hp <= 0){
+            slaves++
+            removeFromStageAndPhysicsWorld()
+        }
     }
 
     private fun isInRange(tower: Tower) =
