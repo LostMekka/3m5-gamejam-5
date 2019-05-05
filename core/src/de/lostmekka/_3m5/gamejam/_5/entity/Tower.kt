@@ -3,22 +3,20 @@ package de.lostmekka._3m5.gamejam._5.entity
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import de.lostmekka._3m5.gamejam._5.Textures
-import de.lostmekka._3m5.gamejam._5.drawTexture
+import de.lostmekka._3m5.gamejam._5.*
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
-import de.lostmekka._3m5.gamejam._5.towerHP
-import de.lostmekka._3m5.gamejam._5.towerAttackRadius
 
 
 class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
     private val texture = Textures.tower
     private var hp = towerHP
+    private var cooldown = 0f
 
     override val body = world.body {
         userData = this@Tower
-        box(width = 1f, height = 1f)
+        box(width = 1f, height = 1.25f)
     }
 
     init {
@@ -28,14 +26,17 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.color = color
         drawTexture(batch, texture)
     }
 
     override fun act(dt: Float) {
         val dudes = mutableListOf<Dude>()
 
-        world.query(x - towerAttackRadius, y - towerAttackRadius, x + towerAttackRadius,
-                y + towerAttackRadius) {
+        world.query(
+            x - towerAttackRadius, y - towerAttackRadius, x + towerAttackRadius,
+            y + towerAttackRadius
+        ) {
             val dude = it.body.userData as? Dude
             if (dude != null) {
                 dudes.add(dude)
@@ -47,20 +48,18 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
             Vector2(it.x, it.y).dst2(body.position)
         }
 
+        cooldown -= dt
+
         if (dude != null) {
-            if (dude.position.x <= x + towerAttackRadius && dude.position.x >= x - towerAttackRadius
-                    && dude.position.y <= y + towerAttackRadius && dude.position.y >= y - towerAttackRadius){
+            if (cooldown <= 0f) {
                 dude.attacked()
+                cooldown = towerCooldown
             }
         }
     }
 
-    fun attacked(){
-        hp--
-
-        if(hp < 1){
-            world.destroyBody(body)
-            this@Tower.remove()
-        }
+    fun attacked() {
+        if (hp > 0) hp--
+        if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 }
