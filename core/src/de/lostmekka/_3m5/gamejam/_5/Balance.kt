@@ -8,6 +8,7 @@ const val MogulSpeed = 4.0f
 
 const val towerHP = 30
 const val towerAttackRadius = 5f
+const val towerCooldown = 0.2f
 
 const val dudeHP = 10
 const val dudesight = 16f
