@@ -37,7 +37,7 @@ class GamePlayScreen : KtxScreen {
     private val groundAtlas = Textures.groundAtlas
     private val ground = Ground(groundAtlas)
 
-    private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
+    private val viewport = ExtendViewport(50f, 25f, OrthographicCamera().also { it.zoom = 0.5f })
     private val mogul = Mogul(world, vec2(-7.5f, -2.7f))
     private val stage = Stage(viewport).apply {
         addActor(mogul)

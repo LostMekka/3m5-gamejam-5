@@ -41,7 +41,7 @@ object Sounds {
     val click by lazy { sound("click.ogg") }
     val initiateBuildMode by lazy { click }
     val build by lazy { sound("building_construction.ogg") }
-    val destroyBuilding by lazy { sound("building_demolish.ogg") }
+    val destroyBuilding by lazy { sound("building_demolish.ogg", 0.5f) }
     val mogulMove by lazy {
         listOf(
             "mogul_acknowledging1.ogg",

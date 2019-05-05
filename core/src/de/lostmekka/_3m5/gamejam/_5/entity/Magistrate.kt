@@ -42,7 +42,7 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
 
     override fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0) {
+        if (hp <= 0 && isActive) {
             isActive = false
             clearConnections()
             Sounds.destroyBuilding.play()
