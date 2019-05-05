@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import de.lostmekka._3m5.gamejam._5.entity.*
@@ -28,7 +29,7 @@ class GamePlayScreen : KtxScreen {
     private val mogul = Mogul(world, vec2())
     private val stage = Stage(viewport).apply {
         addActor(mogul)
-        addActor(Tower(world, vec2(5f, 2f)))
+        addActor(Tower(world, vec2(5f, 2f), this@GamePlayScreen::addLaser))
         addActor(DudeSpawner(vec2(0f, 5f)) {
             Dude(world).also { it.dressColor = Color.RED }
         })
@@ -40,6 +41,12 @@ class GamePlayScreen : KtxScreen {
         })
         addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
         addActor(Magistrate(world, vec2(8.2f, 4.1f)))
+    }
+
+    private val lasers = mutableListOf<Laser>()
+
+    private fun addLaser(start: Vector2, end: Vector2) {
+        lasers += Laser(start, end, laserLifetime, laserColor)
     }
 
     private fun handleInput() {
@@ -56,6 +63,9 @@ class GamePlayScreen : KtxScreen {
         world.step(delta, 5, 5)
         for (actor in stage.actors) if (actor is PhysicsBodyActor) actor.updatePhysics()
         stage.act(delta)
+
+        for (laser in lasers) laser.update(delta)
+        lasers.removeAll { it.isDone }
     }
 
     private fun draw() {
@@ -78,6 +88,7 @@ class GamePlayScreen : KtxScreen {
             it.projectionMatrix = stage.camera.projection
             it.setAutoShapeType(true)
             // draw lines and other shapes here. NOTE: actor debug stuff can be drawn by overriding Actor::drawDebug
+            for (laser in lasers) laser.draw(shapeRenderer)
         }
     }
 

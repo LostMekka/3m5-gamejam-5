@@ -7,9 +7,14 @@ import de.lostmekka._3m5.gamejam._5.*
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
+import kotlin.math.max
 
 
-class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
+class Tower(
+    override val world: World,
+    position: Vector2,
+    private val onAddLaser: (Vector2, Vector2)->Unit
+) : PhysicsBodyActor() {
     private val texture = Textures.tower
     private var hp = towerHP
     private var cooldown = 0f
@@ -50,16 +55,15 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
 
         cooldown -= dt
 
-        if (dude != null) {
-            if (cooldown <= 0f) {
-                dude.attacked()
-                cooldown = towerCooldown
-            }
+        if (dude != null && cooldown <= 0f) {
+            onAddLaser(position, dude.position)
+            dude.damage(towerAttackDamage)
+            cooldown = towerCooldown
         }
     }
 
-    fun attacked() {
-        if (hp > 0) hp--
+    fun damage(amount: Int) {
+        hp = max(0, hp - amount)
         if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 }
