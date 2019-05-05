@@ -31,7 +31,7 @@ class GamePlayScreen : KtxScreen {
         it.dispose()
         font
     }
-    private var amount = "Slaves: 0"
+    private var amount = "0"
 
     private val groundAtlas = Textures.groundAtlas
     private val ground = Ground(groundAtlas)
@@ -83,7 +83,7 @@ class GamePlayScreen : KtxScreen {
         for (laser in lasers) laser.update(delta)
         lasers.removeAll { it.isDone }
 
-        amount = "Slaves:" + slaves
+        amount = slaves.toString()
 
     }
 
@@ -109,7 +109,11 @@ class GamePlayScreen : KtxScreen {
         }
 
         stage.actors.sort { actorA, actorB ->
-            if (actorA.y > actorB.y) -1 else 1
+            when {
+                actorA.y == actorB.y -> 0
+                actorA.y > actorB.y -> -1
+                else -> 1
+            }
         }
 
         stage.draw()
