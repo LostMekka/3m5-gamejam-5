@@ -12,6 +12,7 @@ import de.lostmekka._3m5.gamejam._5.entity.CaravanPost
 import de.lostmekka._3m5.gamejam._5.entity.Magistrate
 import de.lostmekka._3m5.gamejam._5.entity.Mogul
 import de.lostmekka._3m5.gamejam._5.entity.Tower
+import de.lostmekka._3m5.gamejam._5.helper.randomElement
 
 enum class PrimaryActionState {
     Nothing,
@@ -20,24 +21,23 @@ enum class PrimaryActionState {
 }
 
 class UserInputHandler(
-        val mogul: Mogul,
-        val stage: Stage,
-        val world: World,
-        val createTower: (pos: Vector2) -> Tower) {
-
-    var state = PrimaryActionState.Nothing
-    var right = false
-    var left = false
-    var coords = Vector2.Zero
+    private val mogul: Mogul,
+    private val stage: Stage,
+    private val world: World,
+    private val createTower: (pos: Vector2) -> Tower
+) {
+    private var state = PrimaryActionState.Nothing
+    private var right = false
+    private var left = false
+    private var coords: Vector2 = Vector2.Zero
 
     fun handleInput(coords: Vector2) {
         val newRight = Gdx.input.isButtonPressed(Input.Buttons.RIGHT)
-        var newLeft = Gdx.input.isButtonPressed(Input.Buttons.LEFT)
+        val newLeft = Gdx.input.isButtonPressed(Input.Buttons.LEFT)
 
-        if (newRight != right && newRight) {
-            handleSecondaryAction(coords)
-        } else if (newLeft != left && newLeft) {
-            handlePrimaryAction(coords)
+        when {
+            newRight && !right -> handleSecondaryAction(coords)
+            newLeft && !left -> handlePrimaryAction(coords)
         }
 
         right = newRight
@@ -48,6 +48,7 @@ class UserInputHandler(
     fun draw(batch: Batch) {
         batch.color = Color(0f, 1f, 0.3f, 0.5f)
 
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (state) {
             PrimaryActionState.BuildCaravanPoint -> previewCaravanPoint(batch)
             PrimaryActionState.BuildTower -> previewTower(batch)
@@ -66,6 +67,7 @@ class UserInputHandler(
 
     private fun handleSecondaryAction(coords: Vector2) {
         mogul.movementTarget = coords
+        Sounds.mogulMove.randomElement().play()
     }
 
     private fun handlePrimaryAction(coords: Vector2) {
@@ -78,6 +80,7 @@ class UserInputHandler(
     }
 
     private fun actOnActor(actor: Actor, coords: Vector2) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (state) {
             PrimaryActionState.Nothing -> when (actor) {
                 is Magistrate -> {
@@ -94,6 +97,7 @@ class UserInputHandler(
     }
 
     private fun actOnEmptySpace(coords: Vector2) {
+        @Suppress("NON_EXHAUSTIVE_WHEN")
         when (state) {
             PrimaryActionState.BuildCaravanPoint -> {
                 state = PrimaryActionState.Nothing

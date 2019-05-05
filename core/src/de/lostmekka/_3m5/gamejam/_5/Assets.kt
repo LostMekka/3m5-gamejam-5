@@ -38,6 +38,22 @@ object Textures {
 object Sounds {
     val click by lazy { sound("click.ogg") }
     val initiateBuildMode by lazy { sound("switch-to-construction-mode.ogg") }
+    val mogulMove by lazy {
+        listOf(
+            "mogul_acknowledging1.ogg",
+            "mogul_acknowledging2.ogg",
+            "mogul_devaluing1.ogg",
+            "mogul_devaluing2.ogg",
+            "mogul_devaluing3.ogg",
+            "mogul_sardonic-laughter.ogg"
+        ).map { sound(it) }
+    }
+    val mogulDeath by lazy {
+        listOf(
+            "mogul_dying1.ogg",
+            "mogul_dying2.ogg"
+        ).map { sound(it) }
+    }
 }
 
 object Music {
