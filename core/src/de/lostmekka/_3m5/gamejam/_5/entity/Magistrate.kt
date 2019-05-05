@@ -11,12 +11,12 @@ import ktx.box2d.body
  * Copyright 2019 LostMekkaSoft
  */
 
-class Magistrate(override val world: World, position: Vector2): PhysicsBodyActor(), Connectable {
+class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActor(), Connectable {
     override val connections = mutableListOf<Connectable>()
     override val isBase: Boolean = true
     override val body = world.body {
         userData = this@Magistrate
-        box(width = 1f, height = 1f)
+        box(width = 2f, height = 2f)
     }
 
     private val texture = Textures.magistrate

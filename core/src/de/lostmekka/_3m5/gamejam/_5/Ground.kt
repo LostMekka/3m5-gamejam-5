@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.Vector2
 import kotlin.math.floor
 
 data class GroundTile(
-        val pos: Vector2,
-        val color: Color,
-        val tex: TextureRegion
+    val pos: Vector2,
+    val color: Color,
+    val tex: TextureRegion
 )
 
 class Ground(val groundAtlas: List<TextureRegion>) {
@@ -39,11 +39,13 @@ class Ground(val groundAtlas: List<TextureRegion>) {
                 val g = r
                 val b = r
 
-                ground.add(GroundTile(
+                ground.add(
+                    GroundTile(
                         Vector2(x * 16f / 32f - 25f, y * 16f / 32f - 25f),
                         Color(r, g, b, 1f),
                         groundAtlas[floor(atlasIndexNoise[y][x] * groundAtlas.size).toInt()]
-                ))
+                    )
+                )
             }
         }
 

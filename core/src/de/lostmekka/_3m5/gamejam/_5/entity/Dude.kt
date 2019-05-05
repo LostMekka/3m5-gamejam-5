@@ -1,7 +1,6 @@
 package de.lostmekka._3m5.gamejam._5.entity
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
@@ -25,12 +24,12 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
 
     override val body = world.body {
         userData = this@Dude
-        box(width = 1f, height = 1f)
+        box(width = 0.75f, height = 1f)
     }
 
     init {
-        width = 1f
-        height = 1.25f
+        width = 0.75f
+        height = 1f
         this.position = position
     }
 
@@ -66,7 +65,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             val distanceThisFrame = dt * dudeSpeed
             if (distanceThisFrame >= distanceToTarget) {
                 position = vec2(target.x, target.y)
-                if(isInRange(tower) && cooldown<=0f){
+                if (isInRange(tower) && cooldown <= 0f) {
                     tower.attacked()
                     cooldown = dudeMeleeCooldown
                 }
@@ -83,7 +82,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
     }
 
     private fun isInRange(tower: Tower) =
-            tower.x - x in -dudeMeleeRadius..dudeMeleeRadius && tower.y - y in -dudeMeleeRadius..dudeMeleeRadius
+        tower.x - x in -dudeMeleeRadius..dudeMeleeRadius && tower.y - y in -dudeMeleeRadius..dudeMeleeRadius
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = dressColor

@@ -16,7 +16,7 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
 
     override val body = world.body {
         userData = this@Tower
-        box(width = 1f, height = 1f)
+        box(width = 1f, height = 1.25f)
     }
 
     init {
