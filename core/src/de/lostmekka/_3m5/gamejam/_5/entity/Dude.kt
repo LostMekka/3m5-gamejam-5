@@ -7,24 +7,26 @@ import com.badlogic.gdx.physics.box2d.World
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
+import de.lostmekka._3m5.gamejam._5.dudesight
+import de.lostmekka._3m5.gamejam._5.dudeHP
 
 class Dude(world: World) : PhysicsBodyActor(world) {
     private val img = Texture("badlogic.jpg")
-    private var dudeHP = 10
+    private var hp = dudeHP
 
     override val body = world.body {
         userData = this@Dude
         box(width = 1f, height = 1f)
     }
 
-    val sight = 16f
+
 
     override fun act(dt: Float) {
         super.act(dt)
 
         val towers = mutableListOf<Tower>()
 
-        world.query(x - sight, y - sight, x + sight, y + sight) {
+        world.query(x - dudesight, y - dudesight, x + dudesight, y + dudesight) {
             val tower = it.body.userData as? Tower
             if (tower != null) {
                 towers.add(tower)
@@ -42,9 +44,9 @@ class Dude(world: World) : PhysicsBodyActor(world) {
     }
 
     fun attacked() {
-        dudeHP--
+        hp--
 
-        if (dudeHP < 1) {
+        if (hp < 1) {
             world.destroyBody(body)
             this@Dude.remove()
         }

@@ -7,11 +7,13 @@ import com.badlogic.gdx.physics.box2d.World
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
+import de.lostmekka._3m5.gamejam._5.towerHP
+import de.lostmekka._3m5.gamejam._5.towerAttackRadius
 
 
 class Tower(world: World) : PhysicsBodyActor(world) {
     private val img = Texture("badlogic.jpg")
-    private var towerHP = 30
+    private var hp = towerHP
 
     override val body = world.body {
         userData = this@Tower
@@ -24,9 +26,10 @@ class Tower(world: World) : PhysicsBodyActor(world) {
 
     override fun act(dt: Float) {
         val dudes = mutableListOf<Dude>()
-        val attackRadius = 10f
 
-        world.query(x - attackRadius, y - attackRadius, x + attackRadius, y + attackRadius) {
+
+        world.query(x - towerAttackRadius, y - towerAttackRadius, x + towerAttackRadius,
+                y + towerAttackRadius) {
             val dude = it.body.userData as? Dude
             if (dude != null) {
                 dudes.add(dude)
@@ -39,17 +42,17 @@ class Tower(world: World) : PhysicsBodyActor(world) {
         }
 
         if (dude != null) {
-            while (dude.position.x <= x + attackRadius && dude.position.x >= x - attackRadius
-                    && dude.position.y <= y + attackRadius && dude.position.y >= y - attackRadius){
+            while (dude.position.x <= x + towerAttackRadius && dude.position.x >= x - towerAttackRadius
+                    && dude.position.y <= y + towerAttackRadius && dude.position.y >= y - towerAttackRadius){
                 dude.attacked()
             }
         }
     }
 
     fun attacked(){
-        towerHP--
+        hp--
 
-        if(towerHP < 1){
+        if(hp < 1){
             world.destroyBody(body)
             this@Tower.remove()
         }
