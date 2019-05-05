@@ -37,6 +37,7 @@ object Textures {
 }
 
 object Sounds {
+    var volume = 0.4f
     val laser by lazy { sound("weapon_shot.ogg", 0.35f) }
     val click by lazy { sound("click.ogg") }
     val initiateBuildMode by lazy { click }
@@ -65,7 +66,7 @@ object Music {
 }
 
 class SoundWithVolume(val sound: Sound, val volume: Float) {
-    fun play() = sound.play(volume)
+    fun play() = sound.play(volume * Sounds.volume)
 }
 
 fun sound(path: String, volume: Float = 1f) = SoundWithVolume(
