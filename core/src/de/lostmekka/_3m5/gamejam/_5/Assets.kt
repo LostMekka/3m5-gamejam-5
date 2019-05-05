@@ -1,5 +1,7 @@
 package de.lostmekka._3m5.gamejam._5
 
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Batch
@@ -32,6 +34,26 @@ object Textures {
     val headhands = Texture("dude-headhands.png")
             .splitSpriteSheet(24, 32)
 }
+
+object Sounds {
+    val click by lazy { sound("click.ogg") }
+    val initiateBuildMode by lazy { sound("switch-to-construction-mode.ogg") }
+}
+
+class SoundWithVolume(val sound: Sound, val volume: Float) {
+    fun play() = sound.play(volume)
+}
+
+fun sound(path: String, volume: Float = 1f) = SoundWithVolume(
+    Gdx.audio.newSound(Gdx.files.internal("sounds/$path")),
+    volume
+)
+
+fun music(path: String, volume: Float = 1f) =
+    Gdx.audio.newMusic(Gdx.files.internal(path)).also {
+        it.volume = volume
+        it.isLooping = true
+    }
 
 fun Texture.filterNearest(): Texture {
     setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest)
