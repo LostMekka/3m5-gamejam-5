@@ -14,6 +14,7 @@ import ktx.collections.toGdxArray
  */
 
 object Textures {
+    val dot by lazy { Texture("dot.png") }
     val magistrate by lazy { Texture("magistrate.png") }
     val caravanPost by lazy { Texture("caravan post.png") }
     val tower by lazy { Texture("tower.png") }
@@ -36,9 +37,11 @@ object Textures {
 }
 
 object Sounds {
+    val laser by lazy { sound("weapon_shot.ogg", 0.35f) }
     val click by lazy { sound("click.ogg") }
-    val build by lazy { sound("switch-to-construction-mode.ogg") }
     val initiateBuildMode by lazy { click }
+    val build by lazy { sound("building_construction.ogg") }
+    val destroyBuilding by lazy { sound("building_demolish.ogg") }
     val mogulMove by lazy {
         listOf(
             "mogul_acknowledging1.ogg",

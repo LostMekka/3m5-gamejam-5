@@ -56,14 +56,18 @@ class Tower(
         cooldown -= dt
 
         if (dude != null && cooldown <= 0f) {
-            onAddLaser(position, dude.position)
             dude.damage(towerAttackDamage)
             cooldown = towerCooldown
+            onAddLaser(position, dude.position)
+            Sounds.laser.play()
         }
     }
 
     fun damage(amount: Int) {
         hp = max(0, hp - amount)
-        if (hp <= 0) removeFromStageAndPhysicsWorld()
+        if (hp <= 0) {
+            removeFromStageAndPhysicsWorld()
+            Sounds.destroyBuilding.play()
+        }
     }
 }
