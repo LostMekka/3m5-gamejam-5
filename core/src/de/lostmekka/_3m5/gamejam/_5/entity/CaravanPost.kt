@@ -13,6 +13,7 @@ import ktx.box2d.body
 
 class CaravanPost(override val world: World, position: Vector2) : PhysicsBodyActor(), Connectable {
     override val connections = mutableListOf<Connectable>()
+    override val isBase: Boolean = false
     override val body = world.body {
         userData = this@CaravanPost
         box(width = 1f, height = 1f)
