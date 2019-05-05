@@ -3,6 +3,7 @@ package de.lostmekka._3m5.gamejam._5
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -16,14 +17,19 @@ import ktx.box2d.createWorld
 import ktx.graphics.use
 import ktx.math.vec2
 
+
 class GamePlayScreen : KtxScreen {
     private val batch = SpriteBatch()
     private val shapeRenderer = ShapeRenderer()
     private val world = createWorld()
-
     private val img = Texture("badlogic.jpg")
 
-    private val viewport = ExtendViewport(20f, 10f)
+    private val groundAtlas = Texture("ground.png")
+        .also { it.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest) }
+        .splitSpriteSheet(16, 16)
+    private val ground = Ground(groundAtlas)
+
+    private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
     private val mogul = Mogul()
     private val stage = Stage(viewport).apply {
         addActor(mogul)
@@ -59,11 +65,13 @@ class GamePlayScreen : KtxScreen {
     private fun draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-        stage.draw()
 
+        batch.projectionMatrix = viewport.camera.projection
         batch.use {
-            dude.draw(batch, 1f)
+            ground.draw(batch)
         }
+
+        stage.draw()
 
         shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
             it.projectionMatrix = stage.camera.projection

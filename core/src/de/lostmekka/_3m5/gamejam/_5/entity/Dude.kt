@@ -37,10 +37,6 @@ class Dude(world: World) : PhysicsBodyActor(world) {
         val tower = towers.minBy {
             Vector2(it.x, it.y).dst2(body.position)
         }
-
-        if (tower != null) {
-            println("$tower")
-        }
     }
 
     fun attacked() {
