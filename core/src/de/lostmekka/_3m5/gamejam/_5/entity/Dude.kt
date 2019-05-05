@@ -87,15 +87,16 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
                 Vector2(it.x, it.y).dst2(body.position)
             }
             val mogul = stage.actors.find { it is Mogul } as Mogul?
-            if (mogul != null) {
-                val moguldist = mogul.position.dst(position)
-            }
-            if (caravanpost != null && magistrate != null && mogul != null && tower != null) {
-                val list = listOf<PhysicsBodyActor>(caravanpost, magistrate, mogul)
-                target = list.minBy { Vector2(it.x, it.y).dst2(body.position) }
-                if (tower.position.x - x in -towerAttackRadius..towerAttackRadius
-                        && tower.position.y - y in -towerAttackRadius..towerAttackRadius) {
-                    target = tower
+
+            if (tower != null && tower.position.x - x in -towerAttackRadius..towerAttackRadius
+                    && tower.position.y - y in -towerAttackRadius..towerAttackRadius) {
+                target = tower
+            }else{
+                val list = listOf<PhysicsBodyActor?>(caravanpost, magistrate, mogul)
+                target = list.minBy {
+                    if(it != null)Vector2(it.x, it.y).dst2(body.position)
+                    else
+                        Float.MAX_VALUE
                 }
             }
 
