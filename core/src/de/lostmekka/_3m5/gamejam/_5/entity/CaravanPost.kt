@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.World
 import de.lostmekka._3m5.gamejam._5.Textures
 import de.lostmekka._3m5.gamejam._5.drawTexture
 import ktx.box2d.body
+import ktx.math.vec2
 
 /**
  * Copyright 2019 LostMekkaSoft
@@ -18,7 +19,7 @@ class CaravanPost(override val world: World, position: Vector2) : PhysicsBodyAct
         userData = this@CaravanPost
         box(width = 1f, height = 1f)
     }
-    override val connectionOrigin get() = position
+    override val connectionOrigin get() = vec2(x + originX, y + originY)
 
     private val texture = Textures.caravanPost
 

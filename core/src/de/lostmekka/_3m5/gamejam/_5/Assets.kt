@@ -106,9 +106,9 @@ class StatefulAnimation<T>(
 }
 
 fun Actor.drawTexture(batch: Batch, texture: Texture) {
-    batch.draw(texture, x, y, width, height)
+    batch.draw(texture, x, y, originX, originY, width, height, 1f, 1f, 0f, 0, 0, texture.width, texture.height, false, false)
 }
 
 fun Actor.drawTexture(batch: Batch, texture: TextureRegion) {
-    batch.draw(texture, x, y, width, height)
+    batch.draw(texture, x, y, originX, originY, width, height, 1f, 1f, 0f)
 }
