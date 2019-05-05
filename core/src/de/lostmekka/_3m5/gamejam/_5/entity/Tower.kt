@@ -41,7 +41,7 @@ class Tower(world: World) : PhysicsBodyActor(world) {
         if (dude != null) {
             while (dude.position.x <= x + attackRadius && dude.position.x >= x - attackRadius
                     && dude.position.y <= y + attackRadius && dude.position.y >= y - attackRadius){
-                testdummy.attacked();
+                dude.attacked()
             }
         }
     }

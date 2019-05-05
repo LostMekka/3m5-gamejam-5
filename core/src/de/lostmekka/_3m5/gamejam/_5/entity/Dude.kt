@@ -10,6 +10,7 @@ import ktx.box2d.query
 
 class Dude(world: World) : PhysicsBodyActor(world) {
     private val img = Texture("badlogic.jpg")
+    private var dudeHP = 10
 
     override val body = world.body {
         userData = this@Dude
@@ -35,10 +36,21 @@ class Dude(world: World) : PhysicsBodyActor(world) {
             Vector2(it.x, it.y).dst2(body.position)
         }
 
-        if (tower != null) println("$tower")
+        if (tower != null) {
+            println("$tower")
+        }
+    }
+
+    fun attacked() {
+        dudeHP--
+
+        if (dudeHP < 1) {
+            world.destroyBody(body)
+            this@Dude.remove()
+        }
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(img, x, y, 96f, 128f);
+        batch.draw(img, x, y, 96f, 128f)
     }
 }
