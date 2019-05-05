@@ -28,6 +28,11 @@ const val laserLifetime = 0.1f
 val laserColor: Color = Color.GOLD
 
 var slaves = 0
+
+const val caravanPostHP = 20
+const val magistrateHP = 40
+const val mogulHP = 50
+
 val buildPreviewGood = Color(0f, 1f, 0.3f, 0.5f)
 val buildPreviewBad = Color(1f, 0f, 0f, 0.5f)
 const val buildCaravanPostMogulDistance = 5f
