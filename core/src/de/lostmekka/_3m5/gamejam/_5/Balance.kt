@@ -27,7 +27,7 @@ const val dudeSpawnerRandomY = 3f
 const val laserLifetime = 0.1f
 val laserColor: Color = Color.GOLD
 
-var slaves = 0
+var slaves = 30
 
 const val caravanPostHP = 20
 const val magistrateHP = 40
@@ -41,3 +41,6 @@ const val buildCaravanPostMagistrateDistance = 3f
 
 const val maxDotDistance = 0.5f
 const val postDeathCheckInterval = 2f
+
+val caravanPostCosts = 10
+val towerCosts = 20
