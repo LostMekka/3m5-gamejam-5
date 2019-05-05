@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
-import de.lostmekka._3m5.gamejam._5.dudeHP
-import de.lostmekka._3m5.gamejam._5.dudeSpeed
-import de.lostmekka._3m5.gamejam._5.dudesight
-import de.lostmekka._3m5.gamejam._5.splitSpriteSheet
+import de.lostmekka._3m5.gamejam._5.*
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
@@ -18,14 +15,13 @@ import ktx.math.plus
 import ktx.math.times
 import ktx.math.vec2
 
-class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
-    private val dress = Texture("dude-dress.png")
-    private val hat = Texture("dude-hat.png")
-            .splitSpriteSheet(24, 32)
-    private val headhands = Texture("dude-headhands.png")
-            .splitSpriteSheet(24, 32)
+class Dude(override val world: World, position: Vector2 = Vector2.Zero) : PhysicsBodyActor() {
+    private val dress = Textures.dress
+    private val hat = Textures.hat
+    private val headhands = Textures.headhands
 
     private var hp = dudeHP
+    private var cooldown = 0f
 
     override val body = world.body {
         userData = this@Dude
@@ -43,7 +39,6 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
     var skinColor = Color(1f, 1f, 1f, 1f)
 
     override fun act(dt: Float) {
-        var dt = 0.1f
         super.act(dt)
 
         val towers = mutableListOf<Tower>()
@@ -60,6 +55,10 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
             Vector2(it.x, it.y).dst2(body.position)
         }
 
+
+        cooldown -= dt
+
+
         if (tower != null) {
             val pos = vec2(x, y)
             val target = tower.position
@@ -67,6 +66,11 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
             val distanceThisFrame = dt * dudeSpeed
             if (distanceThisFrame >= distanceToTarget) {
                 position = vec2(target.x, target.y)
+                if(isInRange(tower) && cooldown<=0f){
+                    tower.attacked()
+                    cooldown = dudeMeleeCooldown
+                }
+
             } else {
                 position += (target - pos) * (distanceThisFrame / distanceToTarget)
             }
@@ -78,19 +82,18 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
         if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        val resetColor = batch.color
+    private fun isInRange(tower: Tower) =
+            tower.x - x in -dudeMeleeRadius..dudeMeleeRadius && tower.y - y in -dudeMeleeRadius..dudeMeleeRadius
 
+    override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = dressColor
-        batch.draw(dress, x, y, 0.75f, 1f)
+        drawTexture(batch, dress)
 
         val headIndex = 1
         batch.color = skinColor
-        batch.draw(headhands[headIndex], x, y, 0.75f, 1f)
+        drawTexture(batch, headhands[headIndex])
 
         batch.color = hatColor
-        batch.draw(hat[headIndex], x, y, 0.75f, 1f)
-
-        batch.color = resetColor
+        drawTexture(batch, hat[headIndex])
     }
 }
