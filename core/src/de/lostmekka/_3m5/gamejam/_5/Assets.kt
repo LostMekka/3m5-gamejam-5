@@ -14,6 +14,7 @@ import ktx.collections.toGdxArray
  */
 
 object Textures {
+    val dot by lazy { Texture("dot.png") }
     val magistrate by lazy { Texture("magistrate.png") }
     val caravanPost by lazy { Texture("caravan post.png") }
     val tower by lazy { Texture("tower.png") }

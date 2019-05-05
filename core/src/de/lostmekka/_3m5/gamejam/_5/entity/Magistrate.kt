@@ -18,6 +18,7 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
         userData = this@Magistrate
         box(width = 2f, height = 2f)
     }
+    override val connectionOrigin get() = position
 
     private val texture = Textures.magistrate
 

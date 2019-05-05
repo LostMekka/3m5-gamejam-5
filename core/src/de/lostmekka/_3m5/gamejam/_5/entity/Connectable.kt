@@ -1,11 +1,14 @@
 package de.lostmekka._3m5.gamejam._5.entity
 
+import com.badlogic.gdx.math.Vector2
+
 /**
  * Copyright 2019 LostMekkaSoft
  */
 interface Connectable {
     val connections: MutableList<Connectable>
     val isBase: Boolean
+    val connectionOrigin: Vector2
 }
 
 fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable> {

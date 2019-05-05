@@ -18,6 +18,7 @@ class CaravanPost(override val world: World, position: Vector2) : PhysicsBodyAct
         userData = this@CaravanPost
         box(width = 1f, height = 1f)
     }
+    override val connectionOrigin get() = position
 
     private val texture = Textures.caravanPost
 

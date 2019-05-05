@@ -15,8 +15,7 @@ import de.lostmekka._3m5.gamejam._5.entity.*
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
 import ktx.graphics.use
-import ktx.math.vec2
-
+import ktx.math.*
 
 
 class GamePlayScreen : KtxScreen {
@@ -24,7 +23,7 @@ class GamePlayScreen : KtxScreen {
     private val shapeRenderer = ShapeRenderer()
     private val world = createWorld()
 
-    private val guiviewport = ScreenViewport()
+    private val guiViewport = ScreenViewport()
     private val counter = FreeTypeFontGenerator(Gdx.files.internal("fonts/UbuntuMono-R.ttf")).let {
         val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
         parameter.size = 40
@@ -87,15 +86,24 @@ class GamePlayScreen : KtxScreen {
     }
 
 
-
     private fun draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 
         batch.projectionMatrix = viewport.camera.projection
         batch.use {
-            // draw textures that are not managed by stage
             ground.draw(batch)
+            val sources = mutableSetOf<Connectable>()
+            for (actor in stage.actors) {
+                if (actor is Connectable) {
+                    sources += actor
+                    for (other in actor.connections) {
+                        if (other !in sources) {
+                            it.drawDots(actor.connectionOrigin, other.connectionOrigin)
+                        }
+                    }
+                }
+            }
         }
 
         stage.actors.sort { actorA, actorB ->
@@ -108,10 +116,9 @@ class GamePlayScreen : KtxScreen {
             userInputHandler.draw(batch)
         }
 
-        batch.projectionMatrix = guiviewport.camera.projection
+        batch.projectionMatrix = guiViewport.camera.projection
         batch.use {
             // draw textures that are not managed by stage
-                                                           
             counter.setColor(0f, 0f, 0f, 1.0f)
             counter.draw(batch, amount, 0f, (Gdx.graphics.height / 2f) - 0.1f)
         }
@@ -124,6 +131,16 @@ class GamePlayScreen : KtxScreen {
         }
     }
 
+    private fun SpriteBatch.drawDots(start: Vector2, end: Vector2) {
+        val dist = start.dst(end)
+        val count = (dist / maxDotDistance).toInt()
+        val step = (end - start) / (count + 1)
+        for (i in (1..count)) {
+            val pos = start + (step * i)
+            draw(Textures.dot, pos.x - 0.125f, pos.y - 0.125f, 0.25f, 0.25f)
+        }
+    }
+
     override fun render(delta: Float) {
         handleInput()
         update(delta)
@@ -132,7 +149,7 @@ class GamePlayScreen : KtxScreen {
 
     override fun resize(width: Int, height: Int) {
         stage.viewport.update(width, height, true)
-        guiviewport.update(width,height, true)
+        guiViewport.update(width, height, true)
     }
 
     override fun dispose() {
