@@ -61,7 +61,7 @@ object Sounds {
 }
 
 object Music {
-    // TODO: add music here
+    val musicTheMurkyMogul by lazy { music("music_the-murky-mogul.ogg") }
 }
 
 class SoundWithVolume(val sound: Sound, val volume: Float) {
@@ -74,7 +74,7 @@ fun sound(path: String, volume: Float = 1f) = SoundWithVolume(
 )
 
 fun music(path: String, volume: Float = 1f) =
-    Gdx.audio.newMusic(Gdx.files.internal(path)).also {
+    Gdx.audio.newMusic(Gdx.files.internal("music/$path")).also {
         it.volume = volume
         it.isLooping = true
     }
