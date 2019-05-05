@@ -1,5 +1,6 @@
 package de.lostmekka._3m5.gamejam._5.entity
 
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -20,5 +21,9 @@ abstract class PhysicsBodyActor : Actor() {
     fun updatePhysics() {
         x = body.position.x
         y = body.position.y
+    }
+
+    override fun setPosition(x: Float, y: Float) {
+        position = Vector2(x, y)
     }
 }
