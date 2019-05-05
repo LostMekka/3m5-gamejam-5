@@ -70,7 +70,7 @@ class UserInputHandler(
         val distance = buildCaravanPostDistance(state.source)
         var sourceIsNear = state.source.position.dst(coords) < distance
 
-        return mogulIsNear && sourceIsNear && (slaves >=10)
+        return mogulIsNear && sourceIsNear && (slaves >= caravanPostCosts)
     }
 
     private fun canBuildTower(state: State.BuildTower): Boolean {
@@ -78,7 +78,7 @@ class UserInputHandler(
         val caravanPostIsNear = isNear<CaravanPost>(coords, buildCaravanPostPostDistance)
         val magistrateIsNear = isNear<Magistrate>(coords, buildCaravanPostMagistrateDistance)
 
-        return mogulIsNear && (caravanPostIsNear || magistrateIsNear)&&(slaves >= 25)
+        return mogulIsNear && (caravanPostIsNear || magistrateIsNear)&&(slaves >= towerCosts)
     }
 
     private fun handleSecondaryAction(coords: Vector2) {
@@ -136,13 +136,13 @@ class UserInputHandler(
                 Sounds.build.play()
             }
         }
-        slaves -= 10
+        slaves -= caravanPostCosts
     }
 
     private fun buildTower(coords: Vector2) {
         stage.addActor(createTower(coords))
         Sounds.build.play()
-        slaves -=25
+        slaves -= towerCosts
     }
 
     private inline fun <reified T> isNear(coords: Vector2, dst: Float): Boolean {

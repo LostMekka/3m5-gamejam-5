@@ -37,21 +37,28 @@ class GamePlayScreen : KtxScreen {
     private val ground = Ground(groundAtlas)
 
     private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
-    private val mogul = Mogul(world, vec2())
+    private val mogul = Mogul(world, vec2(-7.5f, -2.7f))
     private val stage = Stage(viewport).apply {
+        addActor(createTower(vec2(-8.4f, -4f)))
+        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
         addActor(mogul)
-        addActor(createTower(vec2(5f, 2f)))
-        addActor(DudeSpawner(vec2(0f, 5f)) {
+        addActor(createTower(vec2(-8.4f, 0f)))
+
+
+
+        addActor(DudeSpawner(vec2(0f, 7f)) {
             Dude(world).also { it.dressColor = Color.RED }
         })
-        addActor(DudeSpawner(vec2(-5f, 3f)) {
+        addActor(DudeSpawner(vec2(-5f, 7f)) {
             Dude(world).also { it.dressColor = Color.MAROON }
         })
-        addActor(DudeSpawner(vec2(8f, -6f)) {
+        addActor(DudeSpawner(vec2(2f, -9f)) {
             Dude(world).also { it.dressColor = Color.FIREBRICK }
         })
-        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
+
+
         addActor(Magistrate(world, vec2(8.2f, 4.1f)))
+        addActor(Magistrate(world, vec2(6.2f, -5.1f)))
     }
 
     private val lasers = mutableListOf<Laser>()
