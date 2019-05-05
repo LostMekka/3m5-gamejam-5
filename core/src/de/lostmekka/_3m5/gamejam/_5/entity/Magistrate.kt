@@ -3,6 +3,7 @@ package de.lostmekka._3m5.gamejam._5.entity
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
+import de.lostmekka._3m5.gamejam._5.Sounds
 import de.lostmekka._3m5.gamejam._5.Textures
 import de.lostmekka._3m5.gamejam._5.drawTexture
 import de.lostmekka._3m5.gamejam._5.magistrateHP
@@ -35,22 +36,17 @@ class Magistrate(override val world: World, position: Vector2) : PhysicsBodyActo
     override fun damage(amount: Int) {
         hp = max(0, hp - amount)
         if (hp <= 0) {
-            transitiveClearConnections()
+            removeFromStageAndPhysicsWorld()
+            handleDeath()
         }
+    }
+
+    override fun onDeath() {
+
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = color
         drawTexture(batch, texture)
-    }
-
-    override fun clearConnections() {
-        removeFromStageAndPhysicsWorld()
-
-        for (connection in connections) {
-            connection.connections.remove(this)
-        }
-
-        connections.clear()
     }
 }
