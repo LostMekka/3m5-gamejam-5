@@ -37,7 +37,8 @@ object Textures {
 
 object Sounds {
     val click by lazy { sound("click.ogg") }
-    val initiateBuildMode by lazy { sound("switch-to-construction-mode.ogg") }
+    val build by lazy { sound("switch-to-construction-mode.ogg") }
+    val initiateBuildMode by lazy { click }
     val mogulMove by lazy {
         listOf(
             "mogul_acknowledging1.ogg",
