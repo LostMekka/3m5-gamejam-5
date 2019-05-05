@@ -126,7 +126,7 @@ class UserInputHandler(
         val source = state.source
         when (actor) {
             is Magistrate -> {
-                // TODO: build post connection only
+                if (source is Connectable) source.connect(actor)
                 Sounds.click.play()
             }
             null -> {
