@@ -10,7 +10,7 @@ interface Connectable {
     val isBase: Boolean
     val connectionOrigin: Vector2
 
-    fun clearConnections()
+    fun onDeath()
 }
 
 fun Connectable.connect(other: Connectable) {
@@ -52,15 +52,25 @@ fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable>
     return if (magistrateCount >= 2) listOf() else dyingEntities
 }
 
-fun Connectable.transitiveClearConnections() {
+fun Connectable.handleDeath() {
     val connections = connections.toList()
 
-    clearConnections()
+    this.clearConnections()
 
     for (connection in connections) {
+
         val valhalla = connection.testForBuildingDeath(false)
         for (dead in valhalla) {
             dead.clearConnections()
+            dead.onDeath()
         }
     }
+}
+
+fun Connectable.clearConnections() {
+    for (connection in connections) {
+        connection.connections.remove(this)
+    }
+
+    connections.clear()
 }
