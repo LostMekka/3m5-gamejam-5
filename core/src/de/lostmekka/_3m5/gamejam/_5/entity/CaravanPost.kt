@@ -28,6 +28,7 @@ class CaravanPost(override val world: World, position: Vector2) : PhysicsBodyAct
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
+        batch.color = color
         drawTexture(batch, texture)
     }
 }

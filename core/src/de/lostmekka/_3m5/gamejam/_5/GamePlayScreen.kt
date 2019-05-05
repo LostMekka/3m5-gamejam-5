@@ -29,7 +29,7 @@ class GamePlayScreen : KtxScreen {
     private val mogul = Mogul(world, vec2())
     private val stage = Stage(viewport).apply {
         addActor(mogul)
-        addActor(Tower(world, vec2(5f, 2f), this@GamePlayScreen::addLaser))
+        addActor(createTower(vec2(5f, 2f)))
         addActor(DudeSpawner(vec2(0f, 5f)) {
             Dude(world).also { it.dressColor = Color.RED }
         })
@@ -49,12 +49,15 @@ class GamePlayScreen : KtxScreen {
         lasers += Laser(start, end, laserLifetime, laserColor)
     }
 
+    private fun createTower(pos: Vector2) = Tower(world, pos, ::addLaser)
+
+    private val userInputHandler = UserInputHandler(mogul, stage, world, ::createTower)
+
     private fun handleInput() {
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            val xPos = Gdx.input.x.toFloat()
-            val yPos = Gdx.input.y.toFloat()
-            mogul.movementTarget = stage.screenToStageCoordinates(vec2(xPos, yPos))
-        }
+        val screenCoords = vec2(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
+        val stageCoords = stage.screenToStageCoordinates(screenCoords)
+
+        userInputHandler.handleInput(stageCoords)
     }
 
     private fun update(delta: Float) {
@@ -83,6 +86,10 @@ class GamePlayScreen : KtxScreen {
         }
 
         stage.draw()
+
+        batch.use {
+            userInputHandler.draw(batch)
+        }
 
         shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
             it.projectionMatrix = stage.camera.projection
