@@ -82,14 +82,12 @@ class GamePlayScreen : KtxScreen {
 
         deathCheckTimer -= delta
         if (deathCheckTimer <= 0) {
-            println()
             deathCheckTimer += postDeathCheckInterval
             val lonePosts = stage.actors
                 .mapNotNull { it as? CaravanPost }
                 .filter { it.connections.size <= 1 }
             for (lonePost in lonePosts) {
                 val hasMogul = lonePost.position.dst(mogul.position) <= buildCaravanPostPostDistance
-                println("${lonePost.position} --> $hasMogul")
                 if (lonePost.testForBuildingDeath(hasMogul)) lonePost.destroy()
             }
         }
