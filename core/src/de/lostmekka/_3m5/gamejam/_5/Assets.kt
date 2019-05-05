@@ -61,7 +61,7 @@ object Sounds {
 }
 
 object Music {
-    // TODO: add music here
+    val musicTheMurkyMogul by lazy { music("music_the-murky-mogul.ogg") }
 }
 
 class SoundWithVolume(val sound: Sound, val volume: Float) {
@@ -74,7 +74,7 @@ fun sound(path: String, volume: Float = 1f) = SoundWithVolume(
 )
 
 fun music(path: String, volume: Float = 1f) =
-    Gdx.audio.newMusic(Gdx.files.internal(path)).also {
+    Gdx.audio.newMusic(Gdx.files.internal("music/$path")).also {
         it.volume = volume
         it.isLooping = true
     }
@@ -106,9 +106,9 @@ class StatefulAnimation<T>(
 }
 
 fun Actor.drawTexture(batch: Batch, texture: Texture) {
-    batch.draw(texture, x, y, width, height)
+    batch.draw(texture, x, y, originX, originY, width, height, 1f, 1f, 0f, 0, 0, texture.width, texture.height, false, false)
 }
 
 fun Actor.drawTexture(batch: Batch, texture: TextureRegion) {
-    batch.draw(texture, x, y, width, height)
+    batch.draw(texture, x, y, originX, originY, width, height, 1f, 1f, 0f)
 }

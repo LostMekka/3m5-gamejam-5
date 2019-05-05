@@ -25,6 +25,16 @@ abstract class PhysicsBodyActor : Actor() {
         position = vec2(x, y)
     }
 
+    override fun setHeight(height: Float) {
+        super.setHeight(height)
+        originY = height / 2
+    }
+
+    override fun setWidth(width: Float) {
+        super.setWidth(width)
+        originX = width / 2
+    }
+
     /**
      * override to clean up after the entity got removed from the world
      */

@@ -14,7 +14,7 @@ class Tower(
     override val world: World,
     position: Vector2,
     private val onAddLaser: (Vector2, Vector2)->Unit
-) : PhysicsBodyActor() {
+) : PhysicsBodyActor(), Damageble {
     private val texture = Textures.tower
     private var hp = towerHP
     private var cooldown = 0f
@@ -63,7 +63,7 @@ class Tower(
         }
     }
 
-    fun damage(amount: Int) {
+   override fun damage(amount: Int) {
         hp = max(0, hp - amount)
         if (hp <= 0) {
             removeFromStageAndPhysicsWorld()

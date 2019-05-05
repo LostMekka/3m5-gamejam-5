@@ -31,27 +31,34 @@ class GamePlayScreen : KtxScreen {
         it.dispose()
         font
     }
-    private var amount = "Slaves: 0"
+    private var amount = "0"
 
     private val groundAtlas = Textures.groundAtlas
     private val ground = Ground(groundAtlas)
 
     private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
-    private val mogul = Mogul(world, vec2())
+    private val mogul = Mogul(world, vec2(-7.5f, -2.7f))
     private val stage = Stage(viewport).apply {
+        addActor(createTower(vec2(-8.4f, -4f)))
+        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
         addActor(mogul)
-        addActor(createTower(vec2(5f, 2f)))
-        addActor(DudeSpawner(vec2(0f, 5f)) {
+        addActor(createTower(vec2(-8.4f, 0f)))
+
+
+
+        addActor(DudeSpawner(vec2(0f, 7f)) {
             Dude(world).also { it.dressColor = Color.RED }
         })
-        addActor(DudeSpawner(vec2(-5f, 3f)) {
+        addActor(DudeSpawner(vec2(-5f, 7f)) {
             Dude(world).also { it.dressColor = Color.MAROON }
         })
-        addActor(DudeSpawner(vec2(8f, -6f)) {
+        addActor(DudeSpawner(vec2(2f, -9f)) {
             Dude(world).also { it.dressColor = Color.FIREBRICK }
         })
-        addActor(Magistrate(world, vec2(-8.4f, -2.6f)))
+
+
         addActor(Magistrate(world, vec2(8.2f, 4.1f)))
+        addActor(Magistrate(world, vec2(6.2f, -5.1f)))
     }
 
     private val lasers = mutableListOf<Laser>()
@@ -64,6 +71,8 @@ class GamePlayScreen : KtxScreen {
 
     private val userInputHandler = UserInputHandler(mogul, stage, world, ::createTower)
 
+    private val theSongOfMyPeople = Music.musicTheMurkyMogul.play()
+
     private fun handleInput() {
         val screenCoords = vec2(Gdx.input.x.toFloat(), Gdx.input.y.toFloat())
         val stageCoords = stage.screenToStageCoordinates(screenCoords)
@@ -71,20 +80,31 @@ class GamePlayScreen : KtxScreen {
         userInputHandler.handleInput(stageCoords)
     }
 
+    private var deathCheckTimer = postDeathCheckInterval
     private fun update(delta: Float) {
         stage.camera.position.set(0f, 0f, stage.camera.position.z)
 
         world.step(delta, 5, 5)
         for (actor in stage.actors) if (actor is PhysicsBodyActor) actor.updatePhysics()
+
+        deathCheckTimer -= delta
+        if (deathCheckTimer <= 0) {
+            deathCheckTimer += postDeathCheckInterval
+            val lonePosts = stage.actors
+                .mapNotNull { it as? CaravanPost }
+                .filter { it.connections.size <= 1 }
+            for (lonePost in lonePosts) {
+                val hasMogul = lonePost.position.dst(mogul.position) <= buildCaravanPostPostDistance
+                if (lonePost.testForBuildingDeath(hasMogul)) lonePost.destroy()
+            }
+        }
         stage.act(delta)
 
         for (laser in lasers) laser.update(delta)
         lasers.removeAll { it.isDone }
 
-        amount = "Slaves:" + slaves
-
+        amount = slaves.toString()
     }
-
 
     private fun draw() {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
@@ -107,7 +127,11 @@ class GamePlayScreen : KtxScreen {
         }
 
         stage.actors.sort { actorA, actorB ->
-            if (actorA.y > actorB.y) -1 else 1
+            when {
+                actorA.y == actorB.y -> 0
+                actorA.y > actorB.y -> -1
+                else -> 1
+            }
         }
 
         stage.draw()

@@ -16,36 +16,31 @@ fun Connectable.connect(other: Connectable) {
     other.connections.add(this)
 }
 
-fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): List<Connectable> {
-    if (isBase) return listOf()
-    val dyingEntities = mutableListOf<Connectable>()
-    var magistrateCount = 0
-    if (hasMogulAccess) magistrateCount++
+fun Connectable.testForBuildingDeath(hasMogulAccess: Boolean): Boolean {
+    if (isBase || hasMogulAccess) return false
+    val toExpand = mutableListOf(this)
+    val expanded = mutableListOf<Connectable>()
+    val bases = mutableListOf<Connectable>()
+    while (toExpand.isNotEmpty()) {
+        val current = toExpand.removeAt(0)
+        if (current.isBase) {
+            if (current !in bases) bases += current
+            if (bases.size > 1) return false
+        }
+        expanded += current
+        toExpand += current.connections.filter { next -> expanded.none { it === next } }
+    }
+    return true
+}
 
-    for (child in connections) {
-        var childHasConnectionToBase = false
-        val toExpand = mutableListOf(child)
-        val expanded = mutableListOf<Connectable>()
-        val linedUpEntities = mutableListOf(child)
-        var isSingleLine = true
-        while (!childHasConnectionToBase && toExpand.isNotEmpty()) {
-            val current = toExpand.removeAt(0)
-            if (current.isBase) {
-                childHasConnectionToBase = true
-                break
-            }
-            expanded += current
-            val nextConnections = current.connections.filter { next -> expanded.none { it === next } }
-            toExpand += nextConnections
-            isSingleLine = isSingleLine && nextConnections.size == 1
-            if (isSingleLine) linedUpEntities += current
-        }
-        if (childHasConnectionToBase) {
-            magistrateCount++
-        } else {
-            dyingEntities += linedUpEntities
-        }
+fun Connectable.handleDeath() {
+    this.clearConnections()
+}
+
+fun Connectable.clearConnections() {
+    for (connection in connections) {
+        connection.connections.remove(this)
     }
 
-    return if (magistrateCount >= 2) listOf() else dyingEntities
+    connections.clear()
 }
