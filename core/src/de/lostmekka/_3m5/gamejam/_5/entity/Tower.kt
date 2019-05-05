@@ -58,9 +58,6 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
         }
     }
 
-    private fun isInRange(dude: Dude) =
-        dude.x - x in -towerAttackRadius..towerAttackRadius && dude.y - y in -towerAttackRadius..towerAttackRadius
-
     fun attacked() {
         if (hp > 0) hp--
         if (hp <= 0) removeFromStageAndPhysicsWorld()

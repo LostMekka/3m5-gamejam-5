@@ -23,6 +23,7 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             .splitSpriteSheet(24, 32)
 
     private var hp = dudeHP
+    private var cooldown = 0f
 
     override val body = world.body {
         userData = this@Dude
@@ -40,7 +41,6 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
     var skinColor = Color(1f, 1f, 1f, 1f)
 
     override fun act(dt: Float) {
-        var dt = 0.1f
         super.act(dt)
 
         val towers = mutableListOf<Tower>()
@@ -57,6 +57,10 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             Vector2(it.x, it.y).dst2(body.position)
         }
 
+
+        cooldown -= dt
+
+
         if (tower != null) {
             val pos = vec2(x, y)
             val target = tower.position
@@ -64,6 +68,11 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
             val distanceThisFrame = dt * dudeSpeed
             if (distanceThisFrame >= distanceToTarget) {
                 position = vec2(target.x, target.y)
+                if(isInRange(tower) && cooldown<=0f){
+                    tower.attacked()
+                    cooldown = dudeMeleeCooldown
+                }
+
             } else {
                 position += (target - pos) * (distanceThisFrame / distanceToTarget)
             }
@@ -74,6 +83,9 @@ class Dude(override val world: World, position: Vector2 = Vector2.Zero) : Physic
         if (hp > 0) hp--
         if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
+
+    private fun isInRange(tower: Tower) =
+            tower.x - x in -dudeMeleeRadius..dudeMeleeRadius && tower.y - y in -dudeMeleeRadius..dudeMeleeRadius
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.color = dressColor
