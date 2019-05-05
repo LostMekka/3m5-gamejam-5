@@ -8,6 +8,8 @@
 * ...
 * enslave them to serve in my buildings
 
+![](https://github.com/LostMekka/3m5-gamejam-5/blob/master/mogul.png "")
+
 ## how to play
 
 * click left on the big magistrate building to build caravan posts near them
