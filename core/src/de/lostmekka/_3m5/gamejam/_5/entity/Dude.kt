@@ -12,6 +12,7 @@ import ktx.box2d.query
 import de.lostmekka._3m5.gamejam._5.dudesight
 import de.lostmekka._3m5.gamejam._5.dudeHP
 import ktx.math.minus
+import ktx.math.plus
 import ktx.math.times
 import ktx.math.vec2
 
@@ -53,23 +54,16 @@ class Dude(override val world: World, position: Vector2) : PhysicsBodyActor() {
             val distanceToTarget = pos.dst(target)
             val distanceThisFrame = dt * dudeSpeed
             if (distanceThisFrame >= distanceToTarget) {
-                setPosition(target.x, target.y)
-
+                position = vec2(target.x, target.y)
             } else {
-                val movement = (target - pos) * (distanceThisFrame / distanceToTarget)
-                x += movement.x
-                y += movement.y
+                position += (target - pos) * (distanceThisFrame / distanceToTarget)
             }
         }
     }
 
     fun attacked() {
-        hp--
-
-        if (hp < 1) {
-            world.destroyBody(body)
-            this@Dude.remove()
-        }
+        if (hp > 0) hp--
+        if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

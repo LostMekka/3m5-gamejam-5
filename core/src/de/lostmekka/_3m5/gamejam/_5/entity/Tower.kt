@@ -34,8 +34,10 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
     override fun act(dt: Float) {
         val dudes = mutableListOf<Dude>()
 
-        world.query(x - towerAttackRadius, y - towerAttackRadius, x + towerAttackRadius,
-                y + towerAttackRadius) {
+        world.query(
+            x - towerAttackRadius, y - towerAttackRadius, x + towerAttackRadius,
+            y + towerAttackRadius
+        ) {
             val dude = it.body.userData as? Dude
             if (dude != null) {
                 dudes.add(dude)
@@ -47,20 +49,14 @@ class Tower(override val world: World, position: Vector2) : PhysicsBodyActor() {
             Vector2(it.x, it.y).dst2(body.position)
         }
 
-        if (dude != null) {
-            if (dude.position.x <= x + towerAttackRadius && dude.position.x >= x - towerAttackRadius
-                    && dude.position.y <= y + towerAttackRadius && dude.position.y >= y - towerAttackRadius){
-                dude.attacked()
-            }
-        }
+        if (dude != null && isInRange(dude)) dude.attacked()
     }
 
-    fun attacked(){
-        hp--
+    private fun isInRange(dude: Dude) =
+        dude.x - x in -towerAttackRadius..towerAttackRadius && dude.y - y in -towerAttackRadius..towerAttackRadius
 
-        if(hp < 1){
-            world.destroyBody(body)
-            this@Tower.remove()
-        }
+    fun attacked() {
+        if (hp > 0) hp--
+        if (hp <= 0) removeFromStageAndPhysicsWorld()
     }
 }

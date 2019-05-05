@@ -11,6 +11,7 @@ import de.lostmekka._3m5.gamejam._5.splitSpriteSheet
 import de.lostmekka._3m5.gamejam._5.toAnimation
 import ktx.box2d.body
 import ktx.math.minus
+import ktx.math.plus
 import ktx.math.times
 import ktx.math.vec2
 
@@ -44,12 +45,10 @@ class Mogul(override val world: World, position: Vector2) : PhysicsBodyActor() {
             val distanceToTarget = pos.dst(target)
             val distanceThisFrame = delta * MogulSpeed
             if (distanceThisFrame >= distanceToTarget) {
-                setPosition(target.x, target.y)
+                position = vec2(target.x, target.y)
                 movementTarget = null
             } else {
-                val movement = (target - pos) * (distanceThisFrame / distanceToTarget)
-                x += movement.x
-                y += movement.y
+                position += (target - pos) * (distanceThisFrame / distanceToTarget)
             }
         }
     }
