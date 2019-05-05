@@ -10,12 +10,14 @@ abstract class PhysicsBodyActor(val world: World) : Actor() {
     var position
         get() = body.position
         set(v) {
+            x = v.x
+            y = v.y
             body.setTransform(v.x, v.y, body.angle)
         }
 
     // call before act()
     fun updatePhysics() {
-        x = body.position.x;
-        y = body.position.y;
+        x = body.position.x
+        y = body.position.y
     }
 }

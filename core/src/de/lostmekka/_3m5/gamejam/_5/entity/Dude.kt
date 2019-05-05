@@ -1,17 +1,18 @@
 package de.lostmekka._3m5.gamejam._5.entity
 
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.World
+import de.lostmekka._3m5.gamejam._5.Textures
+import de.lostmekka._3m5.gamejam._5.drawTexture
 import ktx.box2d.Query
 import ktx.box2d.body
 import ktx.box2d.query
 import de.lostmekka._3m5.gamejam._5.dudesight
 import de.lostmekka._3m5.gamejam._5.dudeHP
 
-class Dude(world: World) : PhysicsBodyActor(world) {
-    private val img = Texture("badlogic.jpg")
+class Dude(world: World, position: Vector2) : PhysicsBodyActor(world) {
+    private val texture = Textures.mogul
     private var hp = dudeHP
 
     override val body = world.body {
@@ -19,7 +20,11 @@ class Dude(world: World) : PhysicsBodyActor(world) {
         box(width = 1f, height = 1f)
     }
 
-
+    init {
+        width = 1f
+        height = 1.25f
+        this.position = position
+    }
 
     override fun act(dt: Float) {
         super.act(dt)
@@ -49,6 +54,6 @@ class Dude(world: World) : PhysicsBodyActor(world) {
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(img, x, y, 96f, 128f)
+        drawTexture(batch, texture)
     }
 }

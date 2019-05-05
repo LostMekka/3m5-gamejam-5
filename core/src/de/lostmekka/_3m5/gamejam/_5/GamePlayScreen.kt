@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import de.lostmekka._3m5.gamejam._5.entity.Dude
 import de.lostmekka._3m5.gamejam._5.entity.Mogul
+import de.lostmekka._3m5.gamejam._5.entity.PhysicsBodyActor
 import de.lostmekka._3m5.gamejam._5.entity.Tower
 import ktx.app.KtxScreen
 import ktx.box2d.createWorld
@@ -22,7 +23,6 @@ class GamePlayScreen : KtxScreen {
     private val batch = SpriteBatch()
     private val shapeRenderer = ShapeRenderer()
     private val world = createWorld()
-    private val img = Texture("badlogic.jpg")
 
     private val groundAtlas = Texture("ground.png")
         .also { it.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest) }
@@ -30,20 +30,14 @@ class GamePlayScreen : KtxScreen {
     private val ground = Ground(groundAtlas)
 
     private val viewport = ExtendViewport(40f, 20f, OrthographicCamera().also { it.zoom = 0.5f })
-    private val mogul = Mogul()
+    private val mogul = Mogul(world, vec2())
     private val stage = Stage(viewport).apply {
         addActor(mogul)
+        addActor(Tower(world, vec2(5f, 2f)))
+        addActor(Dude(world, vec2(-2f, 1f)))
     }
 
-    val tower = Tower(world).also {
-        it.setPosition(108f, 108f)
-    }
-
-    val dude = Dude(world).also {
-        it.setPosition(100f, 100f)
-    }
-
-    private fun handleInput(delta: Float) {
+    private fun handleInput() {
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
             val xPos = Gdx.input.x.toFloat()
             val yPos = Gdx.input.y.toFloat()
@@ -55,10 +49,7 @@ class GamePlayScreen : KtxScreen {
         stage.camera.position.set(0f, 0f, stage.camera.position.z)
 
         world.step(delta, 5, 5)
-
-        dude.updatePhysics()
-        dude.act(delta)
-
+        for (actor in stage.actors) if (actor is PhysicsBodyActor) actor.updatePhysics()
         stage.act(delta)
     }
 
@@ -68,6 +59,7 @@ class GamePlayScreen : KtxScreen {
 
         batch.projectionMatrix = viewport.camera.projection
         batch.use {
+            // draw textures that are not managed by stage
             ground.draw(batch)
         }
 
@@ -76,12 +68,12 @@ class GamePlayScreen : KtxScreen {
         shapeRenderer.use(ShapeRenderer.ShapeType.Line) {
             it.projectionMatrix = stage.camera.projection
             it.setAutoShapeType(true)
-            // TODO: draw lines and other shapes here
+            // draw lines and other shapes here. NOTE: actor debug stuff can be drawn by overriding Actor::drawDebug
         }
     }
 
     override fun render(delta: Float) {
-        handleInput(delta)
+        handleInput()
         update(delta)
         draw()
     }
@@ -92,6 +84,5 @@ class GamePlayScreen : KtxScreen {
 
     override fun dispose() {
         batch.dispose()
-        img.dispose()
     }
 }
