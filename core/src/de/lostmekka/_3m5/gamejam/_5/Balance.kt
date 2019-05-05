@@ -26,3 +26,10 @@ const val dudeSpawnerRandomY = 3f
 
 const val laserLifetime = 0.1f
 val laserColor = Color.GOLD
+
+var slaves = 0
+val buildPreviewGood = Color(0f, 1f, 0.3f, 0.5f)
+val buildPreviewBad = Color(1f, 0f, 0f, 0.5f)
+val buildCaravanPostMogulDistance = 5f
+val buildCaravanPostPostDistance = 5f
+val buildCaravanPostMagistrateDistance = 5f

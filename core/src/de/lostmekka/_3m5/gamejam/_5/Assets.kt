@@ -37,7 +37,24 @@ object Textures {
 
 object Sounds {
     val click by lazy { sound("click.ogg") }
-    val initiateBuildMode by lazy { sound("switch-to-construction-mode.ogg") }
+    val build by lazy { sound("switch-to-construction-mode.ogg") }
+    val initiateBuildMode by lazy { click }
+    val mogulMove by lazy {
+        listOf(
+            "mogul_acknowledging1.ogg",
+            "mogul_acknowledging2.ogg",
+            "mogul_devaluing1.ogg",
+            "mogul_devaluing2.ogg",
+            "mogul_devaluing3.ogg",
+            "mogul_sardonic-laughter.ogg"
+        ).map { sound(it) }
+    }
+    val mogulDeath by lazy {
+        listOf(
+            "mogul_dying1.ogg",
+            "mogul_dying2.ogg"
+        ).map { sound(it) }
+    }
 }
 
 object Music {
@@ -86,9 +103,9 @@ class StatefulAnimation<T>(
 }
 
 fun Actor.drawTexture(batch: Batch, texture: Texture) {
-    batch.draw(texture, x - width / 2, y - height / 2, width, height)
+    batch.draw(texture, x, y, width, height)
 }
 
 fun Actor.drawTexture(batch: Batch, texture: TextureRegion) {
-    batch.draw(texture, x - width / 2, y - height / 2, width, height)
+    batch.draw(texture, x, y, width, height)
 }
