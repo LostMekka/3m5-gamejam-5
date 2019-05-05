@@ -27,7 +27,7 @@ const val dudeSpawnerRandomY = 3f
 const val laserLifetime = 0.1f
 val laserColor: Color = Color.GOLD
 
-var slaves = 10
+var slaves = 35
 
 const val caravanPostHP = 20
 const val magistrateHP = 40
