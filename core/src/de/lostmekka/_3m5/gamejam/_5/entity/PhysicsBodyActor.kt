@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.physics.box2d.Body
 import com.badlogic.gdx.physics.box2d.World
 import com.badlogic.gdx.scenes.scene2d.Actor
+import ktx.math.vec2
 
 abstract class PhysicsBodyActor : Actor() {
     abstract val world: World
@@ -19,6 +20,10 @@ abstract class PhysicsBodyActor : Actor() {
             y = v.y
             body.setTransform(v.x, v.y, body.angle)
         }
+
+    override fun setPosition(x: Float, y: Float) {
+        position = vec2(x, y)
+    }
 
     /**
      * override to clean up after the entity got removed from the world

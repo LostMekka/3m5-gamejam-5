@@ -2,6 +2,7 @@ package de.lostmekka._3m5.gamejam._5
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
@@ -34,7 +35,9 @@ class GamePlayScreen : KtxScreen {
     private val stage = Stage(viewport).apply {
         addActor(mogul)
         addActor(Tower(world, vec2(5f, 2f)))
-        addActor(Dude(world, vec2(-2f, 1f)))
+        addActor(Dude(world, vec2(-2f, 1f)).also {
+            it.dressColor = Color.GRAY
+        })
     }
 
     private fun handleInput() {
